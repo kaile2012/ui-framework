@@ -1,19 +1,10 @@
 ﻿using System;
 using Xamarin.Forms;
-using MvvmHelpers;
-using Layout = UiFramework.V2.DemoApp.Models.Layout;
 
-namespace UiFramework.V2.DemoApp
+namespace UiFramework.V2.DemoApp.ViewModels
 {
-    public class MiscellaneousPageViewModel : BaseViewModel
+    public class MiscellaneousPageViewModel : SnippetPageViewModel
     {
-        private Layout _layout;
-        public Layout Layout
-        {
-            get => _layout;
-            set => SetProperty(ref _layout, value);
-        }
-
         public Command Button1Command => new Command(LoadLayout1);
 
         public Command Button2Command => new Command(LoadLayout2);

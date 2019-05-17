@@ -26,6 +26,9 @@ namespace UiFramework.V2.DemoApp.iOS.Renderers
 
             if (Control == null)
             {
+                // This inserts some common code that will be needed in every snippet, just to save space in whatever store snippets are saved in.
+                // viewportScript adds a meta tag to the head
+                // invokeScript calls the Resize function to let the app know the size of the html content once loaded.
                 string viewportScript = "var meta = document.createElement('meta');" +
                                         "meta.setAttribute('name', 'viewport');" +
                                         "meta.setAttribute('content', 'width=device-width');" +
@@ -90,6 +93,7 @@ namespace UiFramework.V2.DemoApp.iOS.Renderers
                 e.NewElement.VisibilityChanged += OnVisibilityChanged;
                 e.NewElement.SourceChanged += OnSourceChanged;
 
+                // Call ContentSizeObserved when scrollView.contentSize changes.
                 _webviewObserver = Control.AddObserver("scrollView.contentSize", NSKeyValueObservingOptions.New, ContentSizeObserved);
 
                 _html = "<html><head><style>*{height:0px;}</style></head></html>";
@@ -105,36 +109,45 @@ namespace UiFramework.V2.DemoApp.iOS.Renderers
                                 return;
 
                             object parameter = tapGesture.CommandParameter;
+                            if (tapGesture.Command.CanExecute(parameter))
+                                tapGesture.Command.Execute(parameter);
 
-                            try
-                            {
-                                Debug.WriteLine($"Tapped {Element.AutomationId}");
-
-                                CGPoint point = recogniser.LocationInView(Control);
-                                NSObject result = await Control.EvaluateJavaScriptAsync($"Clicked({point.X}, {point.Y})");
-                                NSString resultString = result as NSString;
-
-                                Debug.WriteLine(resultString?.ToString());
-                            }
-                            catch (NSErrorException ex)
-                            {
-                                Debug.WriteLine(ex?.Error?.Description);
-                            }
-                            catch (Exception ex)
-                            {
-                                Debug.WriteLine(ex);
-                            }
-                            finally
-                            {
-                                if (tapGesture.Command.CanExecute(parameter))
-                                    tapGesture.Command.Execute(parameter);
-                            }
+                            //if (tapGesture?.Command == null)
+                            //    return;
+                            //
+                            //object parameter = tapGesture.CommandParameter;
+                            //
+                            //try
+                            //{
+                            //    Debug.WriteLine($"Tapped {Element.AutomationId}");
+                            //
+                            //    CGPoint point = recogniser.LocationInView(Control);
+                            //    NSObject result = await Control.EvaluateJavaScriptAsync($"Clicked({point.X}, {point.Y})");
+                            //    NSString resultString = result as NSString;
+                            //
+                            //    Debug.WriteLine(resultString?.ToString());
+                            //}
+                            //catch (NSErrorException ex)
+                            //{
+                            //    Debug.WriteLine(ex?.Error?.Description);
+                            //}
+                            //catch (Exception ex)
+                            //{
+                            //    Debug.WriteLine(ex);
+                            //}
+                            //finally
+                            //{
+                            //    if (tapGesture.Command.CanExecute(parameter))
+                            //        tapGesture.Command.Execute(parameter);
+                            //}
                         }));
             }
         }
 
         public void DidReceiveScriptMessage(WKUserContentController controller, WKScriptMessage message)
         {
+            // Resize the element height when calling Resize from within the javascript
+
             if (message.Name.Equals("Resize"))
                 if (message.Body is NSNumber height)
                     Resize(height.Int32Value);
@@ -142,6 +155,8 @@ namespace UiFramework.V2.DemoApp.iOS.Renderers
 
         private void ContentSizeObserved(NSObservedChange change)
         {
+            // Resize the element height when scrollview.contentSize changes
+
             if (Element == null || change == null)
                 return;
 
@@ -156,6 +171,8 @@ namespace UiFramework.V2.DemoApp.iOS.Renderers
 
         private void OnVisibilityChanged(object sender, EventArgs e)
         {
+            // Resize the element height when the visibility is toggled
+
             if (Control == null)
                 return;
 
@@ -170,6 +187,8 @@ namespace UiFramework.V2.DemoApp.iOS.Renderers
 
         private void OnSourceChanged(object sender, EventArgs e)
         {
+            // Reload the html when the source changes
+
             if (Control == null)
                 return;
 
@@ -186,6 +205,8 @@ namespace UiFramework.V2.DemoApp.iOS.Renderers
 
         private void Resize(double? height = null, [CallerMemberName] string caller = null)
         {
+            // Resize the element height
+
             try
             {
                 if (height.HasValue && height.Value <= 0)

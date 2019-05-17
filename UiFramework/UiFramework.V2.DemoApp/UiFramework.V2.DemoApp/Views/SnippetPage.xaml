@@ -1,41 +1,22 @@
-﻿<?xml version="1.0" encoding="utf-8" ?>
-<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms" 
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="UiFramework.V2.DemoApp.Views.SnippetPage"
              xmlns:controls="clr-namespace:UiFramework.V2.DemoApp.Controls"
              xmlns:ios="clr-namespace:Xamarin.Forms.PlatformConfiguration.iOSSpecific;assembly=Xamarin.Forms.Core"
-             x:Class="UiFramework.V2.DemoApp.Views.MiscellaneousPage"
              ios:Page.UseSafeArea="true"
              Title="{Binding Title}">
 
     <StackLayout>
-        <StackLayout Orientation="Horizontal"
-                     BackgroundColor="LightGray">
-
-            <Button Text="Test 1"
-                    HorizontalOptions="CenterAndExpand"
-                    TextColor="Black"
-                    Command="{Binding Button1Command}" />
-
-            <Button Text="Test 2"
-                    HorizontalOptions="CenterAndExpand"
-                    TextColor="Black"
-                    Command="{Binding Button2Command}" />
-
-            <Button Text="Test 3"
-                    HorizontalOptions="CenterAndExpand"
-                    TextColor="Black"
-                    Command="{Binding Button3Command}" />
-        </StackLayout>
-
         <controls:DynamicGridView HorizontalOptions="CenterAndExpand"
                                   RowsLength="Auto"
                                   ColumnsLength="*"
                                   Columns="1"
                                   Rows="1"
                                   Items="{Binding Layout.Items}">
-                                  <!--Columns="{Binding Layout.ColumnCount}"
+            <!--Columns="{Binding Layout.ColumnCount}"
                                   Rows="{Binding Layout.RowCount}"-->
-            
+
             <controls:DynamicGridView.ItemTemplate>
                 <DataTemplate>
                     <ViewCell>

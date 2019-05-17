@@ -3,9 +3,9 @@ using System.Linq;
 using System.Collections.Generic;
 using Xamarin.Forms;
 using UiFramework.V2.Enums;
-using UiFramework.V2.Interfaces;
+using UiFramework.V2.DemoApp.Views;
 using UiFramework.V2.DemoApp.Models;
-using ILayout = UiFramework.V2.Interfaces.ILayout;
+using UiFramework.V2.DemoApp.ViewModels;
 using Layout = UiFramework.V2.DemoApp.Models.Layout;
 
 namespace UiFramework.V2.DemoApp
@@ -14,18 +14,21 @@ namespace UiFramework.V2.DemoApp
     {
         public static new App Current => (App) Application.Current;
 
+        // Just a quick solution to store some examples
         public IDictionary<Guid, Layout> Layouts = null;
         public IDictionary<Guid, Snippet> Snippets = null;
         public IDictionary<Guid, LayoutItem> LayoutItems = null;
-
         public IDictionary<Guid, object> Models = null;
 
         public App()
         {
             InitializeComponent();
-            Seed();
+            Seed();         // This just loads some examples into the dictionaries
 
-            MainPage = new MiscellaneousPage();
+            //MainPage = new MiscellaneousPage();
+
+            MainPage = new SnippetPage();
+            ((SnippetPage) MainPage.BindingContext).BindingContext.Layout = Layouts[Guid.Parse("306293f2-b5cd-4113-a163-34eacd7ed756")];
         }
 
         public void Seed()
@@ -38,8 +41,8 @@ namespace UiFramework.V2.DemoApp
             Layouts.Add(Guid.Parse("1b946ba7-0706-4755-9a42-97572be96de2"), new Layout
             {
                 Id = Guid.Parse("1b946ba7-0706-4755-9a42-97572be96de2"),
-                Name = "",
-                Description = "",
+                Name = "Example 1",
+                Description = "A 2 x 2 grid, with the bottom element spanning across both columns.",
                 RowCount = 2,
                 ColumnCount = 2,
                 Items = null
@@ -47,8 +50,8 @@ namespace UiFramework.V2.DemoApp
             Layouts.Add(Guid.Parse("20fe03d6-029b-4746-90ce-d00f33d71b26"), new Layout
             {
                 Id = Guid.Parse("20fe03d6-029b-4746-90ce-d00f33d71b26"),
-                Name = "",
-                Description = "",
+                Name = "Example 2",
+                Description = "A 2 x 2 grid.",
                 RowCount = 2,
                 ColumnCount = 2,
                 Items = null
@@ -56,8 +59,8 @@ namespace UiFramework.V2.DemoApp
             Layouts.Add(Guid.Parse("306293f2-b5cd-4113-a163-34eacd7ed756"), new Layout
             {
                 Id = Guid.Parse("306293f2-b5cd-4113-a163-34eacd7ed756"),
-                Name = "",
-                Description = "",
+                Name = "Example 3",
+                Description = "Three rows of a user model.",
                 RowCount = 3,
                 ColumnCount = 1,
                 Items = null
@@ -66,15 +69,15 @@ namespace UiFramework.V2.DemoApp
             Snippets.Add(Guid.Parse("b24ed5d3-f084-4611-90a8-7aca58ae8e63"), new Snippet
             {
                 Id = Guid.Parse("b24ed5d3-f084-4611-90a8-7aca58ae8e63"),
-                Name = "",
-                Description = "",
+                Name = "Text snippet",
+                Description = "Just expects a string, no model.",
                 Html = "<html><style>html, body { margin:0px; padding:0px; max-width:100%; min-width:100%; height:auto; } p { font-size: 22px; }</style><body><p>{.}</p></body></html>"
             });
             Snippets.Add(Guid.Parse("5e6064f7-0480-4b3b-9be1-f6952834fe09"), new Snippet
             {
                 Id = Guid.Parse("5e6064f7-0480-4b3b-9be1-f6952834fe09"),
-                Name = "",
-                Description = "",
+                Name = "User snippet",
+                Description = "Binds the properties of a User object.",
                 Html = "<html><style>html, body { margin:0px; padding:0px; max-width:100%; min-width:100%; height:auto; } p { font-size: 18px; }</style><body><image src=\"{ImageUri}\"><p>{Name} - {UserName}</p><p>{FollowerCount} followers</p></body></html>"
             });
 
@@ -215,7 +218,7 @@ namespace UiFramework.V2.DemoApp
                 UserName = "bloggs",
                 Name = "Joe Bloggs",
                 ImageUri = "https://randomuser.me/api/portraits/men/65.jpg",
-                FollowerCount = 76
+                FollowerCount = 550
             });
             Models.Add(Guid.Parse("c80e7da6-405d-4840-a344-2d08fa5e5ba4"), new User
             {
@@ -229,7 +232,7 @@ namespace UiFramework.V2.DemoApp
                 UserName = "g.brooks87",
                 Name = "Gail Brooks",
                 ImageUri = "https://randomuser.me/api/portraits/women/91.jpg",
-                FollowerCount = 550
+                FollowerCount = 76
             });
         }
     }

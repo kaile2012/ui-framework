@@ -9,14 +9,13 @@ namespace UiFramework.V2.DemoApp.Converters
 {
     public class HtmlSourceConverter : IValueConverter
     {
-        private const string ParameterModelNamespace = "UiFramework.V2.DemoApp.Models";
-
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
             ILayoutItem item = value as ILayoutItem;
             if (item == null)
                 return null;
 
+            // Fetch the snippet from whatever datastore it is stored in.
             ISnippet snippet = App.Current.Snippets[item.SnippetId];
             if (snippet == null)
                 throw new ArgumentNullException(nameof(snippet), $"Snippet {item.SnippetId:D}");
@@ -30,7 +29,7 @@ namespace UiFramework.V2.DemoApp.Converters
                 if (string.IsNullOrWhiteSpace(item.ParameterModel))
                     throw new IgnoredException();
 
-                //Type parameterType = Type.GetType($"{ParameterModelNamespace}.{item.ParameterModel}");
+                // Fetch the class being bound to this element
                 Type parameterType = Type.GetType(item.ParameterModel, true);
                 if (parameterType == null)
                     throw new ArgumentNullException(nameof(parameterType), $"Type {item.ParameterModel}");
@@ -39,24 +38,24 @@ namespace UiFramework.V2.DemoApp.Converters
                 switch (item.ParameterType)
                 {
                     case Enums.Parameter.Single:
+                        // Fetch the instance being bound to this element
                         parameterValue = App.Current.Models[Guid.Parse(item.Parameter)];
                         break;
 
                     case Enums.Parameter.Many:
-                        throw new NotImplementedException();
-
-                    case Enums.Parameter.Random:
                         throw new NotImplementedException();
                 }
 
                 if (parameterValue == null)
                     throw new ArgumentNullException(nameof(parameterValue));
 
+                // Insert each parameter into the html
                 foreach (PropertyInfo property in parameterType.GetProperties())
                     html = html.Replace($"{{{property.Name}}}", property.GetValue(parameterValue)?.ToString());
             }
             catch (IgnoredException)
             {
+                // Insert just the parameter
                 if (!string.IsNullOrWhiteSpace(item.Parameter))
                     html = html.Replace("{.}", item.Parameter);
             }
@@ -64,6 +63,7 @@ namespace UiFramework.V2.DemoApp.Converters
             {
                 Debug.WriteLine(ex.ToString());
 
+                // Resort to inserting just the parameter
                 if (!string.IsNullOrWhiteSpace(item.Parameter))
                     html = html.Replace("{.}", item.Parameter);
             }

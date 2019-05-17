@@ -257,7 +257,7 @@ namespace UiFramework.V2.DemoApp.Controls
                             Grid.SetColumnSpan(view.View, layoutItem.ColumnSpan);
                             Grid.SetRowSpan(view.View, layoutItem.RowSpan);
 
-                            view.BindingContext = layoutItem;     // The binding context gets overwritten when adding it to a layout
+                            view.BindingContext = layoutItem;     // The binding context gets overwritten when adding it to a layout, so need to set it again after
                         }
                     }
                     catch (Exception ex)
