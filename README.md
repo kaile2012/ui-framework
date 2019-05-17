@@ -1,2 +1,8 @@
 # ui-framework
-A UI framework for Xamarin.Forms mobile apps, that uses HTML and CSS. To be named.
+A grid-based UI framework for Xamarin.Forms mobile apps, that uses HTML and CSS. To be named.
+
+## Todo
+- [ ] Enums.Parameter.Many lists (including filter string for ILayoutItem.Parameter)
+- [ ] OnTapped needs implementing
+- [ ] Make a control to embed into pages
+- [ ] Android
