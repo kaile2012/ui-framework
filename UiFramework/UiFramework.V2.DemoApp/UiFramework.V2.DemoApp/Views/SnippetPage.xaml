@@ -7,7 +7,7 @@
              ios:Page.UseSafeArea="true"
              Title="{Binding Title}">
 
-    <StackLayout>
+    <ScrollView HorizontalOptions="Fill">
         <controls:DynamicGridView HorizontalOptions="CenterAndExpand"
                                   RowsLength="Auto"
                                   ColumnsLength="*"
@@ -28,5 +28,5 @@
                 </DataTemplate>
             </controls:DynamicGridView.ItemTemplate>
         </controls:DynamicGridView>
-    </StackLayout>
+    </ScrollView>
 </ContentPage>

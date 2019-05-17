@@ -78,7 +78,7 @@ namespace UiFramework.V2.DemoApp
                 Id = Guid.Parse("5e6064f7-0480-4b3b-9be1-f6952834fe09"),
                 Name = "User snippet",
                 Description = "Binds the properties of a User object.",
-                Html = "<html><style>html, body { margin:0px; padding:0px; max-width:100%; min-width:100%; height:auto; } p { font-size: 18px; }</style><body><image src=\"{ImageUri}\"><p>{Name} - {UserName}</p><p>{FollowerCount} followers</p></body></html>"
+                Html = "<html><style>html, body { margin:0px; padding:0px; max-width:100%; min-width:100%; height:auto; } p { font-size: 18px; }</style><body><img src=\"{ImageUri}\"><p>{Name} - {UserName}</p><p>{FollowerCount} followers</p></body></html>"
             });
 
             LayoutItems.Add(Guid.Parse("a6260c9d-392e-445e-82b7-512bd864c48a"), new LayoutItem

@@ -223,8 +223,7 @@ namespace UiFramework.V2.DemoApp.iOS.Renderers
                         if (height == null && Control == null)
                             return;
 
-                        //ViewBase page = Element.ParentUntil<ViewBase>();
-                        //Debug.WriteLine($"{caller} {page?.ViewModel?.PageName}.{AttachedProperties.GetSnippetId(Element)} {AttachedProperties.GetObjectIds(Element)}: {height}, {Control.ScrollView.ContentSize.Width} x {Control.ScrollView.ContentSize.Height}, {Control.ScrollView.Frame.Width} x {Control.ScrollView.Frame.Height}");
+                        //Debug.WriteLine($"{caller}: {height}, {Control.ScrollView.ContentSize.Width} x {Control.ScrollView.ContentSize.Height}, {Control.ScrollView.Frame.Width} x {Control.ScrollView.Frame.Height}");
 
                         Element.HeightRequest = Element.MinimumHeightRequest = height.Value;
                         //Control.Frame = CGRect.FromLTRB(Control.Frame.Left, Control.Frame.Top, Control.Frame.Right, Control.Frame.Top + (nfloat) height.Value);
