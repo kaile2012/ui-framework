@@ -11,6 +11,7 @@ using WebKit;
 using CoreGraphics;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
+using UiFramework.V2.DemoApp.Models;
 
 [assembly: ExportRenderer(typeof(SnippetWebView), typeof(SnippetWebViewRenderer))]
 namespace UiFramework.V2.DemoApp.iOS.Renderers
@@ -108,38 +109,38 @@ namespace UiFramework.V2.DemoApp.iOS.Renderers
                             if (tapGesture?.Command == null)
                                 return;
 
-                            object parameter = tapGesture.CommandParameter;
-                            if (tapGesture.Command.CanExecute(parameter))
-                                tapGesture.Command.Execute(parameter);
+                            LayoutItemTappedArgs args = new LayoutItemTappedArgs
+                            {
+                                CommandParameter = tapGesture.CommandParameter
+                            };
 
-                            //if (tapGesture?.Command == null)
-                            //    return;
-                            //
-                            //object parameter = tapGesture.CommandParameter;
-                            //
-                            //try
-                            //{
-                            //    Debug.WriteLine($"Tapped {Element.AutomationId}");
-                            //
-                            //    CGPoint point = recogniser.LocationInView(Control);
-                            //    NSObject result = await Control.EvaluateJavaScriptAsync($"Clicked({point.X}, {point.Y})");
-                            //    NSString resultString = result as NSString;
-                            //
-                            //    Debug.WriteLine(resultString?.ToString());
-                            //}
-                            //catch (NSErrorException ex)
-                            //{
-                            //    Debug.WriteLine(ex?.Error?.Description);
-                            //}
-                            //catch (Exception ex)
-                            //{
-                            //    Debug.WriteLine(ex);
-                            //}
-                            //finally
-                            //{
-                            //    if (tapGesture.Command.CanExecute(parameter))
-                            //        tapGesture.Command.Execute(parameter);
-                            //}
+                            try
+                            {
+                                Debug.WriteLine($"Tapped {Element.AutomationId}");
+                            
+                                // If the Clicked function exists in the snippet, this can be implemented to return a
+                                // string that the OnTapped method can use to identify the html element that was tapped.
+                                CGPoint point = recogniser.LocationInView(Control);
+                                NSObject result = await Control.EvaluateJavaScriptAsync($"Clicked({point.X}, {point.Y})");
+                                NSString resultString = result as NSString;
+                            
+                                Debug.WriteLine(resultString?.ToString());
+                                if (!string.IsNullOrWhiteSpace(resultString?.ToString()))
+                                    args.JavaScriptMethodReturn = resultString.ToString();
+                            }
+                            catch (NSErrorException ex)
+                            {
+                                Debug.WriteLine(ex?.Error?.Description);
+                            }
+                            catch (Exception ex)
+                            {
+                                Debug.WriteLine(ex);
+                            }
+                            finally
+                            {
+                                if (tapGesture.Command.CanExecute(args))
+                                    tapGesture.Command.Execute(args);
+                            }
                         }));
             }
         }

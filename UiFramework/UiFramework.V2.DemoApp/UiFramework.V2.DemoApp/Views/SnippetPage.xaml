@@ -5,7 +5,8 @@
              xmlns:controls="clr-namespace:UiFramework.V2.DemoApp.Controls"
              xmlns:ios="clr-namespace:Xamarin.Forms.PlatformConfiguration.iOSSpecific;assembly=Xamarin.Forms.Core"
              ios:Page.UseSafeArea="true"
-             Title="{Binding Title}">
+             Title="{Binding Title}"
+             x:Name="Root">
 
     <ScrollView HorizontalOptions="Fill">
         <controls:DynamicGridView HorizontalOptions="CenterAndExpand"
@@ -23,7 +24,13 @@
                         <controls:SnippetWebView Margin="0"
                                                  HorizontalOptions="Fill"
                                                  VerticalOptions="Fill"
-                                                 Source="{Binding ., Converter={StaticResource HtmlSourceConverter}}" />
+                                                 Source="{Binding ., Converter={StaticResource HtmlSourceConverter}}">
+                            
+                            <controls:SnippetWebView.GestureRecognizers>
+                                <TapGestureRecognizer Command="{Binding BindingContext.TappedCommand, Source={x:Reference Root}}"
+                                                      CommandParameter="{Binding .}"/>
+                            </controls:SnippetWebView.GestureRecognizers>
+                        </controls:SnippetWebView>
                     </ViewCell>
                 </DataTemplate>
             </controls:DynamicGridView.ItemTemplate>

@@ -130,6 +130,10 @@
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\iOS\Xamarin.iOS.CSharp.targets" />
   <ItemGroup>
+    <ProjectReference Include="..\..\UiFramework\UiFramework.V2.csproj">
+      <Project>{F60EA0E7-BB4B-4B2F-85FF-0829508E719E}</Project>
+      <Name>UiFramework.V2</Name>
+    </ProjectReference>
     <ProjectReference Include="..\UiFramework.V2.DemoApp\UiFramework.V2.DemoApp.csproj">
       <Project>{A5513B42-D930-4B71-B44F-9BD16737EFA1}</Project>
       <Name>UiFramework.V2.DemoApp</Name>
