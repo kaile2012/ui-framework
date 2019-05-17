@@ -25,10 +25,10 @@ namespace UiFramework.V2.DemoApp
             InitializeComponent();
             Seed();         // This just loads some examples into the dictionaries
 
-            //MainPage = new MiscellaneousPage();
+            MainPage = new MiscellaneousPage();
 
-            MainPage = new SnippetPage();
-            ((SnippetPage) MainPage.BindingContext).BindingContext.Layout = Layouts[Guid.Parse("306293f2-b5cd-4113-a163-34eacd7ed756")];
+            //MainPage = new SnippetPage();
+            //((SnippetPage) MainPage).BindingContext.Layout = Layouts[Guid.Parse("306293f2-b5cd-4113-a163-34eacd7ed756")];
         }
 
         public void Seed()
