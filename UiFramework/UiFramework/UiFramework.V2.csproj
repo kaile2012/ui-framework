@@ -1,0 +1,9 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <AssemblyName>UiFramework.V2</AssemblyName>
+    <RootNamespace>UiFramework.V2</RootNamespace>
+  </PropertyGroup>
+
+</Project>
