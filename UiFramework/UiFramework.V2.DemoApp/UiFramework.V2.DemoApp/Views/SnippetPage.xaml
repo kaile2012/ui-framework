@@ -1,9 +1,9 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms" 
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="UiFramework.V2.DemoApp.Views.SnippetPage"
              xmlns:controls="clr-namespace:UiFramework.V2.DemoApp.Controls"
              xmlns:ios="clr-namespace:Xamarin.Forms.PlatformConfiguration.iOSSpecific;assembly=Xamarin.Forms.Core"
+             x:Class="UiFramework.V2.DemoApp.Views.SnippetPage"
              ios:Page.UseSafeArea="true"
              Title="{Binding Title}"
              x:Name="Root">

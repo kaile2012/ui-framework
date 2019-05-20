@@ -1,0 +1,51 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<ScrollView xmlns="http://xamarin.com/schemas/2014/forms" 
+            xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+            xmlns:models="clr-namespace:UiFramework.V2.Forms.Models"
+            xmlns:controls="clr-namespace:UiFramework.V2.Forms.Controls"
+            xmlns:converters="clr-namespace:UiFramework.V2.Forms.Converters"
+            x:Class="UiFramework.V2.Forms.Controls.SnippetView">
+
+    <ScrollView.Resources>
+        <converters:HtmlSourceConverter x:Key="HtmlSourceConverter" />
+    </ScrollView.Resources>
+
+    <controls:DynamicGridView VerticalOptions="CenterAndExpand"
+                              HorizontalOptions="CenterAndExpand"
+                              RowsLength="Auto"
+                              ColumnsLength="*"
+                              Columns="1"
+                              Rows="1"
+                              Items="{Binding SnippetLayout.Items}">
+
+        <!--
+        These don't seem to update when they change? This is an issue when decreasing them because the grid doesn't shrink.
+        Leaving Columns and Rows set to 1 seems to expand over 1 and shrink back down to 1, so they may not be needed.
+        
+        BindingMode is set to OneTime!
+        
+        Columns="{Binding Layout.ColumnCount}"
+        Rows="{Binding Layout.RowCount}"
+        -->
+
+        <controls:DynamicGridView.ItemTemplate>
+            <DataTemplate>
+                <ViewCell>
+                    <controls:SnippetWebView Margin="0"
+                                             HorizontalOptions="Fill"
+                                             VerticalOptions="Fill"
+                                             Source="{Binding ., Converter={StaticResource HtmlSourceConverter}}">
+                        
+                        <controls:SnippetWebView.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding ItemTappedCommand}">
+                                <TapGestureRecognizer.CommandParameter>
+                                    <models:LayoutItemTappedArgs View="{Binding .}" />
+                                </TapGestureRecognizer.CommandParameter>
+                            </TapGestureRecognizer>
+                        </controls:SnippetWebView.GestureRecognizers>
+                    </controls:SnippetWebView>
+                </ViewCell>
+            </DataTemplate>
+        </controls:DynamicGridView.ItemTemplate>
+    </controls:DynamicGridView>
+</ScrollView>
