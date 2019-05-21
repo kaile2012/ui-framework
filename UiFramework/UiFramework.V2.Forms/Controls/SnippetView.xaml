@@ -6,10 +6,14 @@
             xmlns:converters="clr-namespace:UiFramework.V2.Forms.Converters"
             x:Class="UiFramework.V2.Forms.Controls.SnippetView"
             HorizontalOptions="Fill"
-            VerticalOptions="Fill">
+            VerticalOptions="Fill"
+            x:Name="Root">
 
     <ScrollView.Resources>
         <converters:HtmlSourceConverter x:Key="HtmlSourceConverter" />
+        <converters:ContainerConverter x:Key="ContainerConverter"
+                                       ContainerModel="UiFramework.V2.Forms.Models.LayoutItemTappedArgs, UiFramework.V2.Forms, Version=1.0.0.0, Culture=null, PublicKeyToken=null"
+                                       ContainerProperty="SnippetLayoutItem" />
     </ScrollView.Resources>
 
     <controls:DynamicGridView HorizontalOptions="Fill"
@@ -28,11 +32,8 @@
                                              Source="{Binding ., Converter={StaticResource HtmlSourceConverter}}">
                         
                         <controls:SnippetWebView.GestureRecognizers>
-                            <TapGestureRecognizer Command="{Binding ItemTappedCommand}">
-                                <TapGestureRecognizer.CommandParameter>
-                                    <models:LayoutItemTappedArgs View="{Binding .}" />
-                                </TapGestureRecognizer.CommandParameter>
-                            </TapGestureRecognizer>
+                            <TapGestureRecognizer Command="{Binding ItemTappedCommand, Source={x:Reference Root}}"
+                                                  CommandParameter="{Binding ., Converter={StaticResource ContainerConverter}}" />
                         </controls:SnippetWebView.GestureRecognizers>
                     </controls:SnippetWebView>
                 </ViewCell>

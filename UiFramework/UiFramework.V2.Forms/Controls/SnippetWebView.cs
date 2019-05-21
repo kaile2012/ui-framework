@@ -8,6 +8,8 @@ namespace UiFramework.V2.Forms.Controls
         public EventHandler VisibilityChanged;
         public EventHandler SourceChanged;
 
+        public bool OutputJavaScriptErrors { get; set; }
+
         public new HtmlWebViewSource Source
         {
             get => (HtmlWebViewSource)GetValue(SourceProperty);

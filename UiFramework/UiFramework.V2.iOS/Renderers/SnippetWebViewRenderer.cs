@@ -119,8 +119,6 @@ namespace UiFramework.V2.iOS.Renderers
 
                             try
                             {
-                                Debug.WriteLine($"Tapped {Element.AutomationId}");
-                            
                                 // If the Clicked function exists in the snippet, this can be implemented to return a
                                 // string that the OnTapped method can use to identify the html element that was tapped.
                                 CGPoint point = recogniser.LocationInView(Control);
@@ -133,7 +131,8 @@ namespace UiFramework.V2.iOS.Renderers
                             }
                             catch (NSErrorException ex)
                             {
-                                Debug.WriteLine(ex?.Error?.Description);
+                                if (e.NewElement.OutputJavaScriptErrors)
+                                    Debug.WriteLine(ex?.Error?.Description);
                             }
                             catch (Exception ex)
                             {
