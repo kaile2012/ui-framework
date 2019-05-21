@@ -1,11 +1,10 @@
 ﻿using System;
-
+using Android.OS;
 using Android.App;
-using Android.Content.PM;
-using Android.Runtime;
 using Android.Views;
 using Android.Widget;
-using Android.OS;
+using Android.Runtime;
+using Android.Content.PM;
 
 namespace Demo.Droid
 {
@@ -16,6 +15,8 @@ namespace Demo.Droid
         {
             TabLayoutResource = Resource.Layout.Tabbar;
             ToolbarResource = Resource.Layout.Toolbar;
+
+            UiFramework.V2.Android.Renderers.SnippetWebViewRenderer.Initialise();
 
             base.OnCreate(savedInstanceState);
 

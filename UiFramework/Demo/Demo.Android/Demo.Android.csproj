@@ -53,13 +53,13 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Xamarin.Forms" Version="3.6.0.264807" />
-    <PackageReference Include="Xamarin.Android.Support.Design" Version="28.0.0.1" />
-    <PackageReference Include="Xamarin.Android.Support.v7.AppCompat" Version="28.0.0.1" />
-    <PackageReference Include="Xamarin.Android.Support.v4" Version="28.0.0.1" />
-    <PackageReference Include="Xamarin.Android.Support.v7.CardView" Version="28.0.0.1" />
-    <PackageReference Include="Xamarin.Android.Support.v7.MediaRouter" Version="28.0.0.1" />
-    <PackageReference Include="Xamarin.Android.Support.Core.Utils" Version="28.0.0.1" />
-    <PackageReference Include="Xamarin.Android.Support.CustomTabs" Version="28.0.0.1" />
+    <PackageReference Include="Xamarin.Android.Support.Design" Version="27.0.2" />
+    <PackageReference Include="Xamarin.Android.Support.v7.AppCompat" Version="27.0.2" />
+    <PackageReference Include="Xamarin.Android.Support.v4" Version="27.0.2" />
+    <PackageReference Include="Xamarin.Android.Support.v7.CardView" Version="27.0.2" />
+    <PackageReference Include="Xamarin.Android.Support.v7.MediaRouter" Version="27.0.2" />
+    <PackageReference Include="Xamarin.Android.Support.Core.Utils" Version="27.0.2" />
+    <PackageReference Include="Xamarin.Android.Support.CustomTabs" Version="27.0.2" />
     <PackageReference Include="Xamarin.Essentials" Version="1.0.1" />
   </ItemGroup>
   <ItemGroup>
@@ -101,6 +101,14 @@
     <ProjectReference Include="..\..\UiFramework.V2.Android\UiFramework.V2.Android.csproj">
       <Project>{903867cb-fe45-495d-893f-a45de6f55d8c}</Project>
       <Name>UiFramework.V2.Android</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\UiFramework.V2.Forms\UiFramework.V2.Forms.csproj">
+      <Project>{96b7e195-3bc5-4053-8946-ca5c8723f9c0}</Project>
+      <Name>UiFramework.V2.Forms</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\UiFramework\UiFramework.V2.csproj">
+      <Project>{f60ea0e7-bb4b-4b2f-85ff-0829508e719e}</Project>
+      <Name>UiFramework.V2</Name>
     </ProjectReference>
     <ProjectReference Include="..\Demo\Demo.csproj">
       <Project>{7A8E401C-A057-473F-AF32-1DF6CAC99DDD}</Project>

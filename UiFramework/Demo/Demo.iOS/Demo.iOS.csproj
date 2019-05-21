@@ -133,11 +133,19 @@
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\iOS\Xamarin.iOS.CSharp.targets" />
   <ItemGroup>
+    <ProjectReference Include="..\..\UiFramework.V2.Forms\UiFramework.V2.Forms.csproj">
+      <Project>{96b7e195-3bc5-4053-8946-ca5c8723f9c0}</Project>
+      <Name>UiFramework.V2.Forms</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\UiFramework.V2.iOS\UiFramework.V2.iOS.csproj">
       <Project>{987594e8-6312-4583-9def-d4a9aed0088a}</Project>
       <Name>UiFramework.V2.iOS</Name>
       <IsAppExtension>false</IsAppExtension>
       <IsWatchApp>false</IsWatchApp>
+    </ProjectReference>
+    <ProjectReference Include="..\..\UiFramework\UiFramework.V2.csproj">
+      <Project>{f60ea0e7-bb4b-4b2f-85ff-0829508e719e}</Project>
+      <Name>UiFramework.V2</Name>
     </ProjectReference>
     <ProjectReference Include="..\Demo\Demo.csproj">
       <Project>{7A8E401C-A057-473F-AF32-1DF6CAC99DDD}</Project>

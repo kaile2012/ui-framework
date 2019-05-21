@@ -9,17 +9,23 @@ using CoreGraphics;
 using Foundation;
 using WebKit;
 using UIKit;
-using UiFramework.V2.Forms.Controls;
-using UiFramework.V2.iOS.Renderers;
 using UiFramework.V2.Forms.Models;
+using UiFramework.V2.iOS.Renderers;
+using UiFramework.V2.Forms.Controls;
 
 [assembly: ExportRenderer(typeof(SnippetWebView), typeof(SnippetWebViewRenderer))]
+[assembly: Preserve(typeof(SnippetWebViewRenderer))]
 namespace UiFramework.V2.iOS.Renderers
 {
     public class SnippetWebViewRenderer : ViewRenderer<SnippetWebView, WKWebView>, IWKNavigationDelegate, IWKScriptMessageHandler
     {
         private string _html = null;
         private IDisposable _webviewObserver = null;
+
+        public static void Initialise()
+        {
+            Debug.WriteLine("SnippetWebViewRenderer initialised");
+        }
 
         protected override void OnElementChanged(ElementChangedEventArgs<SnippetWebView> e)
         {

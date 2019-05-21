@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Diagnostics;
 using System.Collections.Generic;
 using UiFramework.V2.Forms.Models;
 using UiFramework.V2.Forms.Pages;
@@ -9,7 +10,6 @@ using UiFramework.V2.Enums;
 using Xamarin.Forms;
 using Demo.Models;
 using Layout = UiFramework.V2.Forms.Models.Layout;
-using System.Reflection;
 
 namespace Demo
 {
@@ -32,6 +32,8 @@ namespace Demo
             System.Threading.Tasks.Task.Delay(2000)
                 .ContinueWith(t =>
                 {
+                    t.GetAwaiter().GetResult();
+
                     ((ISnippetPageViewModel)MainPage.BindingContext).SnippetLayout = Layouts[Guid.Parse("306293f2-b5cd-4113-a163-34eacd7ed756")];
                 });
         }
@@ -58,14 +60,14 @@ namespace Demo
                 Id = Guid.Parse("b24ed5d3-f084-4611-90a8-7aca58ae8e63"),
                 Name = "Text snippet",
                 Description = "Just expects a string, no model.",
-                Html = "<html><style>html, body { margin:0px; padding:0px; max-width:100%; min-width:100%; height:auto; } p { font-size: 22px; }</style><body><p>{.}</p></body></html>"
+                Html = "<html><style>html, body { margin:0px; padding:0px; max-width:100%; min-width:100%; } p { font-size: 22px; }</style><body><p>{.}</p></body></html>"
             });
             Snippets.Add(Guid.Parse("5e6064f7-0480-4b3b-9be1-f6952834fe09"), new Snippet
             {
                 Id = Guid.Parse("5e6064f7-0480-4b3b-9be1-f6952834fe09"),
                 Name = "User snippet",
                 Description = "Binds the properties of a User object.",
-                Html = "<html><style>html, body { margin:0px; padding:0px; max-width:100%; min-width:100%; height:auto; } p { font-size: 18px; }</style><body><img src=\"{ImageUri}\"><p>{Name} - {UserName}</p><p>{FollowerCount} followers</p></body></html>"
+                Html = "<html><style>html, body { margin:0px; padding:0px; max-width:100%; min-width:100%; } p { font-size: 18px; }</style><body><img src=\"{ImageUri}\"><p>{Name} - {UserName}</p><p>{FollowerCount} followers</p></body></html>"
             });
 
             LayoutItems.Add(Guid.Parse("50ecebda-c817-4c03-9cd2-75a397e24417"), new LayoutItem
@@ -91,7 +93,7 @@ namespace Demo
                 ParameterModel = "Demo.Models.User",
                 Parameter = "51294eb9-8852-4688-bdfa-30637e267a07",
                 OnTappedMethodName = "",
-                Row = 0,
+                Row = 1,
                 Column = 0,
                 RowSpan = 1,
                 ColumnSpan = 1
@@ -105,7 +107,7 @@ namespace Demo
                 ParameterModel = "Demo.Models.User",
                 Parameter = "c80e7da6-405d-4840-a344-2d08fa5e5ba4",
                 OnTappedMethodName = "",
-                Row = 1,
+                Row = 2,
                 Column = 0,
                 RowSpan = 1,
                 ColumnSpan = 1
@@ -119,7 +121,7 @@ namespace Demo
                 ParameterModel = "Demo.Models.User",
                 Parameter = "7ee559fa-aa91-4fe2-8d55-91388dc75746",
                 OnTappedMethodName = "",
-                Row = 2,
+                Row = 3,
                 Column = 0,
                 RowSpan = 1,
                 ColumnSpan = 1

@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-
+using System.Diagnostics;
 using Foundation;
 using UIKit;
 
@@ -22,6 +20,8 @@ namespace Demo.iOS
         //
         public override bool FinishedLaunching(UIApplication app, NSDictionary options)
         {
+            UiFramework.V2.iOS.Renderers.SnippetWebViewRenderer.Initialise();
+
             global::Xamarin.Forms.Forms.Init();
             LoadApplication(new App());
 

@@ -4,30 +4,21 @@
             xmlns:models="clr-namespace:UiFramework.V2.Forms.Models"
             xmlns:controls="clr-namespace:UiFramework.V2.Forms.Controls"
             xmlns:converters="clr-namespace:UiFramework.V2.Forms.Converters"
-            x:Class="UiFramework.V2.Forms.Controls.SnippetView">
+            x:Class="UiFramework.V2.Forms.Controls.SnippetView"
+            HorizontalOptions="Fill"
+            VerticalOptions="Fill">
 
     <ScrollView.Resources>
         <converters:HtmlSourceConverter x:Key="HtmlSourceConverter" />
     </ScrollView.Resources>
 
-    <controls:DynamicGridView VerticalOptions="CenterAndExpand"
-                              HorizontalOptions="CenterAndExpand"
-                              RowsLength="Auto"
+    <controls:DynamicGridView HorizontalOptions="Fill"
                               ColumnsLength="*"
-                              Columns="1"
-                              Rows="1"
+                              RowsLength="Auto"
+                              Columns="{Binding SnippetLayout.ColumnCount}"
+                              Rows="{Binding SnippetLayout.RowCount}"
                               Items="{Binding SnippetLayout.Items}">
-
-        <!--
-        These don't seem to update when they change? This is an issue when decreasing them because the grid doesn't shrink.
-        Leaving Columns and Rows set to 1 seems to expand over 1 and shrink back down to 1, so they may not be needed.
-        
-        BindingMode is set to OneTime!
-        
-        Columns="{Binding Layout.ColumnCount}"
-        Rows="{Binding Layout.RowCount}"
-        -->
-
+                              
         <controls:DynamicGridView.ItemTemplate>
             <DataTemplate>
                 <ViewCell>

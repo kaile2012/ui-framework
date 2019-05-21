@@ -1,11 +1,11 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:ios="clr-namespace:Xamarin.Forms.PlatformConfiguration.iOSSpecific;assembly=Xamarin.Forms.Core"
              xmlns:controls="clr-namespace:UiFramework.V2.Forms.Controls"
-             x:Class="UiFramework.V2.Forms.Pages.SnippetPage">
+             x:Class="UiFramework.V2.Forms.Pages.SnippetPage"
+             ios:Page.UseSafeArea="True">
 
-    <controls:SnippetView VerticalOptions="Fill"
-                          HorizontalOptions="Fill"
-                          ItemTappedCommand="{Binding ItemTappedCommand}"
+    <controls:SnippetView ItemTappedCommand="{Binding ItemTappedCommand}"
                           SnippetLayout="{Binding SnippetLayout}" />
 </ContentPage>
