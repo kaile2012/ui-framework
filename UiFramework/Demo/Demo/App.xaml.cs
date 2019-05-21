@@ -26,16 +26,11 @@ namespace Demo
             InitializeComponent();
             Seed();
 
-            MainPage = new SnippetPage();
-            MainPage.BindingContext = new SnippetPageViewModel();
+            MainPage = new SnippetPage { BindingContext = new SnippetPageViewModel() };
 
-            System.Threading.Tasks.Task.Delay(2000)
-                .ContinueWith(t =>
-                {
-                    t.GetAwaiter().GetResult();
-
-                    ((ISnippetPageViewModel)MainPage.BindingContext).SnippetLayout = Layouts[Guid.Parse("306293f2-b5cd-4113-a163-34eacd7ed756")];
-                });
+            ((ISnippetPageViewModel) MainPage.BindingContext).Methods.Add(nameof(Print), Print);
+            ((ISnippetPageViewModel) MainPage.BindingContext).Methods.Add(nameof(NavigateToAnotherPage), NavigateToAnotherPage);
+            ((ISnippetPageViewModel) MainPage.BindingContext).SnippetLayout = Layouts[Guid.Parse("306293f2-b5cd-4113-a163-34eacd7ed756")];
         }
         
         public void Seed()
@@ -92,7 +87,7 @@ namespace Demo
                 ParameterType = Parameter.Single,
                 ParameterModel = "Demo.Models.User",
                 Parameter = "51294eb9-8852-4688-bdfa-30637e267a07",
-                OnTappedMethodName = "",
+                OnTappedMethodName = "NavigateToAnotherPage",
                 Row = 1,
                 Column = 0,
                 RowSpan = 1,
@@ -106,7 +101,7 @@ namespace Demo
                 ParameterType = Parameter.Single,
                 ParameterModel = "Demo.Models.User",
                 Parameter = "c80e7da6-405d-4840-a344-2d08fa5e5ba4",
-                OnTappedMethodName = "",
+                OnTappedMethodName = "NavigateToAnotherPage",
                 Row = 2,
                 Column = 0,
                 RowSpan = 1,
@@ -120,7 +115,7 @@ namespace Demo
                 ParameterType = Parameter.Single,
                 ParameterModel = "Demo.Models.User",
                 Parameter = "7ee559fa-aa91-4fe2-8d55-91388dc75746",
-                OnTappedMethodName = "",
+                OnTappedMethodName = "NavigateToAnotherPage",
                 Row = 3,
                 Column = 0,
                 RowSpan = 1,
@@ -177,6 +172,16 @@ namespace Demo
         {
             Type type = typeof(App);
             return type.AssemblyQualifiedName.Replace(type.FullName, "");
+        }
+
+        public void Print(LayoutItemTappedArgs args)
+        {
+            Debug.WriteLine($"Print: {args.SnippetLayoutItem.Parameter}");
+        }
+
+        public void NavigateToAnotherPage(LayoutItemTappedArgs args)
+        {
+            Debug.WriteLine("This method could navigate to a different page. A more in depth demo can show the possibilities");
         }
     }
 }

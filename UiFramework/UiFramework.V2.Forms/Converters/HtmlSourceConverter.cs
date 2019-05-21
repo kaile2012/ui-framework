@@ -19,7 +19,7 @@ namespace UiFramework.V2.Forms.Converters
             if (!(Application.Current is ITbdApplication app))
                 throw new InvalidCastException("App must implement ITbdApplication");
             string assemblyQualification = app.GetAssemblyQualification();
-            
+
             ISnippet snippet = app.GetSnippet(item.SnippetId);
             if (snippet == null)
                 throw new ArgumentNullException(nameof(snippet), $"Snippet {item.SnippetId:D}");
