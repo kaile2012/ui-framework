@@ -1,7 +1,11 @@
-﻿namespace Demo.Models
+﻿using System;
+
+namespace Demo.Models
 {
     public class User
     {
+        public Guid Id { get; set; }
+
         public string UserName { get; set; }
 
         public string Name { get; set; }

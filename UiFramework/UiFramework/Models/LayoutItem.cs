@@ -44,7 +44,7 @@ namespace UiFramework.V2.Models
         public string ParameterModel { get; set; }
 
         /// <summary>
-        /// The sort of item that is being bound to a snippet. (<see cref="Enums.Parameter"/> may not be fully implemented.)
+        /// The sort of item that is being bound to a snippet.
         /// <para />
         /// <seealso cref="Enums.Parameter"/>
         /// <para />

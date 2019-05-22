@@ -1,9 +1,12 @@
 ﻿using System;
+using System.Linq;
 using System.Reflection;
 using System.Diagnostics;
 using System.Globalization;
+using System.Collections.Generic;
 using Xamarin.Forms;
 using UiFramework.V2.Interfaces;
+using UiFramework.V2.Forms.Models;
 
 namespace UiFramework.V2.Forms.Converters
 {
@@ -15,11 +18,30 @@ namespace UiFramework.V2.Forms.Converters
             if (item == null)
                 return null;
 
-            // Fetch the snippet from whatever datastore it is stored in.
             if (!(Application.Current is ITbdApplication app))
                 throw new InvalidCastException("App must implement ITbdApplication");
-            string assemblyQualification = app.GetAssemblyQualification();
+            
+            switch (item.ParameterType)
+            {
+                case Enums.Parameter.Single:
+                    return GetSingleSnippet(item, app);
 
+                case Enums.Parameter.Many:
+                    return GetManySnippets(item, app);
+
+                default:
+                    return value;
+            }
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            throw new NotImplementedException();
+        }
+
+        private HtmlWebViewSource GetSingleSnippet(ILayoutItem item, ITbdApplication app)
+        {
+            // Fetch the snippet from whatever datastore it is stored in.
             ISnippet snippet = app.GetSnippet(item.SnippetId);
             if (snippet == null)
                 throw new ArgumentNullException(nameof(snippet), $"Snippet {item.SnippetId:D}");
@@ -33,23 +55,15 @@ namespace UiFramework.V2.Forms.Converters
                 if (string.IsNullOrWhiteSpace(item.ParameterModel))
                     throw new IgnoredException();
 
+                string assemblyQualification = app.GetAssemblyQualification();
+
                 // Fetch the class being bound to this element
                 Type parameterType = Type.GetType(item.ParameterModel + assemblyQualification, true);
                 if (parameterType == null)
                     throw new ArgumentNullException(nameof(parameterType), $"Type {item.ParameterModel}");
 
-                object parameterValue = null;
-                switch (item.ParameterType)
-                {
-                    case Enums.Parameter.Single:
-                        // Fetch the instance being bound to this element
-                        parameterValue = app.GetModel(item.ParameterModel, Guid.Parse(item.Parameter));
-                        break;
-
-                    case Enums.Parameter.Many:
-                        throw new NotImplementedException();
-                }
-
+                // Fetch the instance being bound to this element
+                object parameterValue = app.GetModel(item.ParameterModel, Guid.Parse(item.Parameter));
                 if (parameterValue == null)
                     throw new ArgumentNullException(nameof(parameterValue));
 
@@ -78,10 +92,119 @@ namespace UiFramework.V2.Forms.Converters
             return new HtmlWebViewSource { Html = html };
         }
 
-        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        private IEnumerable<ILayoutItem> GetManySnippets(ILayoutItem item, ITbdApplication app)
         {
-            throw new NotImplementedException();
+            IList<LayoutItem> list = null;
+
+            try
+            {
+                if (string.IsNullOrWhiteSpace(item.ParameterModel))
+                    throw new IgnoredException();
+
+                string assemblyQualification = app.GetAssemblyQualification();
+
+                // Fetch the class being bound to this list
+                Type parameterType = Type.GetType(item.ParameterModel + assemblyQualification, true);
+                if (parameterType == null)
+                    throw new ArgumentNullException(nameof(parameterType), $"Type {item.ParameterModel}");
+
+                // Fetch the instances being bound to this list
+                IEnumerable<object> parameterValues = app.GetModels(item.ParameterModel, item.Parameter);
+                if (parameterValues == null)
+                    throw new ArgumentNullException(nameof(parameterValues));
+
+                Func<object, string> selectKeyFrom = app.GetModelKeySelector(item.ParameterModel);
+                list = parameterValues.Select(parameterValue => new LayoutItem
+                {
+                    Id = item.Id,
+                    LayoutId = item.LayoutId,
+                    SnippetId = item.SnippetId,
+                    ParameterModel = item.ParameterModel,
+                    ParameterType = Enums.Parameter.Single,
+                    Parameter = selectKeyFrom(parameterValue),
+                    OnTappedMethodName = item.OnTappedMethodName,
+                }).ToList();
+            }
+            catch (IgnoredException)
+            {
+                list = new List<LayoutItem>();
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine(ex.ToString());
+                list = new List<LayoutItem>();
+            }
+
+            return list;
         }
+
+        //private IEnumerable<object> Get(IEnumerable<object> models, Type modelType, string filterString)
+        //{
+        //    try
+        //    {
+        //        IList<Func<object, bool>> actions = new List<Func<object, bool>>();
+        //        if (!string.IsNullOrWhiteSpace(filterString))
+        //        {
+        //            //"FollowerCount >= 100|FollowerCount <= 1000|UserName == \"A username\""
+        //
+        //            string[] filters = filterString.Split(new[] { '|' });
+        //            foreach (string filter in filters)
+        //            {
+        //                string[] filterParts = filter.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+        //                if (filterParts.Length < 3)
+        //                    continue;
+        //
+        //                string left = filterParts[0].Trim();
+        //                string operation = filterParts[1].Trim();
+        //                string right = filterParts.Skip(2).Aggregate("", (a, b) => $"{a} {b}").Trim();
+        //
+        //                if (string.IsNullOrWhiteSpace(left))
+        //                    continue;
+        //                if (string.IsNullOrWhiteSpace(operation))
+        //                    continue;
+        //                if (string.IsNullOrWhiteSpace(right))
+        //                    continue;
+        //
+        //                PropertyInfo property = modelType.GetProperty(left);
+        //                object rightValue = System.Convert.ChangeType(right, property.PropertyType);
+        //
+        //                actions.Add(model =>
+        //                {
+        //                    object leftValue = property.GetValue(model);
+        //
+        //                    switch (operation)
+        //                    {
+        //                        case "==": return leftValue == rightValue;
+        //                        case ">=": return leftValue >= rightValue;        // These are a problem
+        //                        case "<=": return leftValue <= rightValue;        // These are a problem
+        //                        case ">":  return leftValue >  rightValue;        // These are a problem
+        //                        case "<":  return leftValue <  rightValue;        // These are a problem
+        //                        default:   throw new NotImplementedException($"Operation {operation} is not implemented");
+        //                    }
+        //                });
+        //            }
+        //        }
+        //    
+        //        return models.Where(model =>
+        //        {
+        //            if (actions == null || actions.Count < 1)
+        //                return true;
+        //    
+        //            foreach (var action in actions)
+        //            {
+        //                if (!action(model))
+        //                    return false;
+        //            }
+        //
+        //            return true;
+        //        });
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        Debug.WriteLine(ex);
+        //        throw new Exception("Filter parse failed", ex);
+        //    }
+        //}
 
         private class IgnoredException : Exception
         {

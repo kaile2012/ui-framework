@@ -17,6 +17,8 @@
 
         /// <summary>
         /// The elements that make up this page.
+        /// <para />
+        /// <seealso cref="ILayout.Items"/>
         /// </summary>
         ILayoutItem[] Items { get; set; }
 
