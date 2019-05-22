@@ -14,7 +14,7 @@ namespace UiFramework.V2.Enums
         /// </summary>
         Single = 0,
         /// <summary>
-        /// Not implemented. A collection of items being bound to a snippet. This is intended to create a list of this snippet.
+        /// A collection of items being bound to a snippet, to create a list of elements.
         /// </summary>
         Many = 1
     }

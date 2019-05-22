@@ -26,7 +26,11 @@ namespace Demo
             InitializeComponent();
             Seed();
 
-            MainPage = new SnippetPage { BindingContext = new SnippetPageViewModel() };
+            MainPage = new SnippetPage
+            {
+                BindingContext = new SnippetPageViewModel(),
+                BackgroundColor = Color.Gray
+            };
 
             ((ISnippetPageViewModel) MainPage.BindingContext).Methods.Add(nameof(Print), Print);
             ((ISnippetPageViewModel) MainPage.BindingContext).Methods.Add(nameof(NavigateToAnotherPage), NavigateToAnotherPage);
@@ -43,8 +47,8 @@ namespace Demo
             Layouts.Add(Guid.Parse("306293f2-b5cd-4113-a163-34eacd7ed756"), new Layout
             {
                 Id = Guid.Parse("306293f2-b5cd-4113-a163-34eacd7ed756"),
-                Name = "Example 3",
-                Description = "Three rows of a user model.",
+                Name = "Example",
+                Description = "",
                 RowCount = 3,
                 ColumnCount = 1,
                 Items = null
@@ -72,7 +76,7 @@ namespace Demo
                 SnippetId = Guid.Parse("b24ed5d3-f084-4611-90a8-7aca58ae8e63"),
                 ParameterType = Parameter.Single,
                 ParameterModel = "",
-                Parameter = "These are three users",
+                Parameter = "Users with 100 or more followers",
                 OnTappedMethodName = "Print",
                 Row = 0,
                 Column = 0,
@@ -84,9 +88,9 @@ namespace Demo
                 Id = Guid.Parse("e147e0af-4e63-433a-9685-72910209e3e5"),
                 LayoutId = Guid.Parse("306293f2-b5cd-4113-a163-34eacd7ed756"),
                 SnippetId = Guid.Parse("5e6064f7-0480-4b3b-9be1-f6952834fe09"),
-                ParameterType = Parameter.Single,
+                ParameterType = Parameter.Many,
                 ParameterModel = "Demo.Models.User",
-                Parameter = "51294eb9-8852-4688-bdfa-30637e267a07",
+                Parameter = "FollowerCount >= 100",
                 OnTappedMethodName = "NavigateToAnotherPage",
                 Row = 1,
                 Column = 0,
@@ -97,11 +101,11 @@ namespace Demo
             {
                 Id = Guid.Parse("d0fdbbc7-c405-483b-bbd9-6edbc1db837f"),
                 LayoutId = Guid.Parse("306293f2-b5cd-4113-a163-34eacd7ed756"),
-                SnippetId = Guid.Parse("5e6064f7-0480-4b3b-9be1-f6952834fe09"),
+                SnippetId = Guid.Parse("b24ed5d3-f084-4611-90a8-7aca58ae8e63"),
                 ParameterType = Parameter.Single,
-                ParameterModel = "Demo.Models.User",
-                Parameter = "c80e7da6-405d-4840-a344-2d08fa5e5ba4",
-                OnTappedMethodName = "NavigateToAnotherPage",
+                ParameterModel = "",
+                Parameter = "All users",
+                OnTappedMethodName = "Print",
                 Row = 2,
                 Column = 0,
                 RowSpan = 1,
@@ -112,9 +116,9 @@ namespace Demo
                 Id = Guid.Parse("db476a6e-4630-423e-9fc1-d02f2531d581"),
                 LayoutId = Guid.Parse("306293f2-b5cd-4113-a163-34eacd7ed756"),
                 SnippetId = Guid.Parse("5e6064f7-0480-4b3b-9be1-f6952834fe09"),
-                ParameterType = Parameter.Single,
+                ParameterType = Parameter.Many,
                 ParameterModel = "Demo.Models.User",
-                Parameter = "7ee559fa-aa91-4fe2-8d55-91388dc75746",
+                Parameter = "",
                 OnTappedMethodName = "NavigateToAnotherPage",
                 Row = 3,
                 Column = 0,
@@ -127,6 +131,7 @@ namespace Demo
 
             Users.Add(Guid.Parse("51294eb9-8852-4688-bdfa-30637e267a07"), new User
             {
+                Id = Guid.Parse("51294eb9-8852-4688-bdfa-30637e267a07"),
                 UserName = "bloggs",
                 Name = "Joe Bloggs",
                 ImageUri = "https://randomuser.me/api/portraits/men/65.jpg",
@@ -134,6 +139,7 @@ namespace Demo
             });
             Users.Add(Guid.Parse("c80e7da6-405d-4840-a344-2d08fa5e5ba4"), new User
             {
+                Id = Guid.Parse("c80e7da6-405d-4840-a344-2d08fa5e5ba4"),
                 UserName = "michelle.thompson41",
                 Name = "Michelle Thompson",
                 ImageUri = "https://randomuser.me/api/portraits/women/21.jpg",
@@ -141,6 +147,7 @@ namespace Demo
             });
             Users.Add(Guid.Parse("7ee559fa-aa91-4fe2-8d55-91388dc75746"), new User
             {
+                Id = Guid.Parse("7ee559fa-aa91-4fe2-8d55-91388dc75746"),
                 UserName = "g.brooks87",
                 Name = "Gail Brooks",
                 ImageUri = "https://randomuser.me/api/portraits/women/91.jpg",
@@ -165,6 +172,36 @@ namespace Demo
 
                 default:
                     throw new ArgumentException($"Model {model} is not implemented in ITbdApplication.GetModel");
+            }
+        }
+
+        public IEnumerable<object> GetModels(string model, string filterString)
+        {
+            // Until we can properly store a filtering expression as a string, we can just treat
+            // the filter string as a key and have users implement the filter in their code.
+
+            switch (model)
+            {
+                case "Demo.Models.User" when string.IsNullOrWhiteSpace(filterString):
+                    return Users.Values;
+
+                case "Demo.Models.User" when filterString == "FollowerCount >= 100":
+                    return Users.Values.Where(u => u.FollowerCount >= 100);
+
+                default:
+                    throw new ArgumentException($"{model} \"{filterString}\" is not implemented in ITbdApplication.GetModels");
+            }
+        }
+
+        public Func<object, string> GetModelKeySelector(string model)
+        {
+            switch (model)
+            {
+                case "Demo.Models.User":
+                    return new Func<object, string>(u => ((User) u).Id.ToString("D"));
+
+                default:
+                    throw new ArgumentException($"Model {model} is not implemented in ITbdApplication.GetModels");
             }
         }
 
