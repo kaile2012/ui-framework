@@ -36,13 +36,13 @@ namespace UiFramework.V2.Forms.Converters
             if (item == null)
                 return value;
             
-            switch (item.ParameterType)
+            switch (item.Type)
             {
-                case Enums.Parameter.Single:
-                    return GetSingleSnippet(item);
+                case Enums.ReplicationType.Single:
+                    return GetSingle(item);
 
-                case Enums.Parameter.Many:
-                    return GetManySnippets(item);
+                case Enums.ReplicationType.Many:
+                    return GetMany(item);
 
                 default:
                     return value;
@@ -58,7 +58,7 @@ namespace UiFramework.V2.Forms.Converters
         // Private methods
         //
 
-        private HtmlWebViewSource GetSingleSnippet(LayoutItem item)
+        private HtmlWebViewSource GetSingle(LayoutItem item)
         {
             // Fetch the snippet from whatever datastore it is stored in.
             ISnippet snippet = Snippets.Select(item.SnippetId);
@@ -66,159 +66,315 @@ namespace UiFramework.V2.Forms.Converters
                 throw new ArgumentNullException(nameof(snippet), $"Snippet {item.SnippetId:D}");
 
             string html = snippet.Html;
+            if (item.Parameters == null || item.Parameters.Length < 1)
+                return new HtmlWebViewSource { Html = html };
 
-            try
+            foreach (LayoutItemParameter parameter in item.Parameters.OrderBy(p => p.FlowIndex))
             {
-                if (string.IsNullOrWhiteSpace(item.Parameter) && item.ParameterValue == null)
-                    throw new IgnoredException();
-                if (string.IsNullOrWhiteSpace(item.ParameterModel))
-                    throw new IgnoredException();
+                if (parameter == null)
+                    continue;
 
-                Assembly parameterModelAssembly = Assemblies.Select(item.ParameterModel);
+                // If there is no model being bound
+                if (string.IsNullOrWhiteSpace(parameter.Model))
+                {
+                    // Just input the string value
+                    if (string.IsNullOrWhiteSpace(parameter.Value))
+                        html = html.Replace($"{{{parameter.FlowIndex}}}", parameter.Value);
+
+                    continue;
+                }
 
                 // Fetch the class being bound to this element
-                Type parameterType = Type.GetType($"{item.ParameterModel}, {parameterModelAssembly.ToString()}", true);
-                if (parameterType == null)
-                    throw new ArgumentNullException(nameof(parameterType), $"Type {item.ParameterModel}");
+                Assembly parameterModelAssembly = Assemblies.Select(parameter.Model);
+                Type parameterType = Type.GetType($"{parameter.Model}, {parameterModelAssembly.ToString()}", true);
 
-                // Fetch the instance being bound to this element
-                // If this LayoutItem has already been through the GetManySnippets then the parameterValue is already stored in item.ParameterValue 
-                object parameterValue = item.ParameterValue == null
-                    ? GetParameterValue(item.ParameterModel, item.Parameter, out bool isFromContext)
-                    : item.ParameterValue;
-                if (parameterValue == null)
-                    throw new ArgumentNullException(nameof(parameterValue));
+                // Fetch the value of this parameter
+                if (parameter.Reference == null)
+                    parameter.Reference = GetSingleValue(parameter);
 
-                // Insert each parameter into the html
-                foreach (PropertyInfo property in parameterType.GetProperties())
-                    html = html.Replace($"{{{property.Name}}}", property.GetValue(parameterValue)?.ToString());
+                if (parameter.Reference != null)
+                {
+                    Func<object, string> selectKeyOf = Models.GetKeySelector(parameter.Model);
+                    parameter.Value = selectKeyOf(parameter.Reference);
+                }
+
+                // Replace all referenced properties for this parameter
+                if (parameter.Reference != null)
+                    foreach (PropertyInfo property in parameterType.GetProperties())
+                        html = html.Replace($"{{{parameter.FlowIndex}.{property.Name}}}", property.GetValue(parameter.Reference)?.ToString());
             }
-            catch (IgnoredException)
-            {
-                // Insert just the parameter
-                if (!string.IsNullOrWhiteSpace(item.Parameter))
-                    html = html.Replace("{.}", item.Parameter);
-            }
-            catch (Exception ex)
-            {
-                Debug.WriteLine(ex.ToString());
-
-                // Resort to inserting just the parameter
-                if (!string.IsNullOrWhiteSpace(item.Parameter))
-                    html = html.Replace("{.}", item.Parameter);
-            }
-
-            if (string.IsNullOrWhiteSpace(html))
-                return null;
 
             return new HtmlWebViewSource { Html = html };
         }
 
-        private IEnumerable<ILayoutItem> GetManySnippets(ILayoutItem item)
+        private IEnumerable<LayoutItem> GetMany(LayoutItem item)
         {
-            IList<LayoutItem> list = null;
+            if (item.Parameters == null || item.Parameters.Length < 1)
+                return new List<LayoutItem>();
 
-            try
+            IList<LayoutItem> ret = new List<LayoutItem>();
+
+            int replicationCount = 0;
+            IDictionary<Guid, IList<object>> parametersValues = new Dictionary<Guid, IList<object>>();
+            foreach (LayoutItemParameter parameter in item.Parameters.OrderBy(p => p.FlowIndex))
             {
-                if (string.IsNullOrWhiteSpace(item.ParameterModel))
-                    throw new IgnoredException();
+                if (parameter == null)
+                    continue;
 
-                Assembly parameterModelAssembly = Assemblies.Select(item.ParameterModel);
+                if (string.IsNullOrWhiteSpace(parameter.Model))
+                    continue;
 
-                // Fetch the class being bound to this list
-                Type parameterType = Type.GetType($"{item.ParameterModel}, {parameterModelAssembly.ToString()}", true);
-                if (parameterType == null)
-                    throw new ArgumentNullException(nameof(parameterType), $"Type {item.ParameterModel}");
+                IList<object> values = GetManyValues(parameter).ToList();
+                parametersValues.Add(parameter.Id, values);
+                replicationCount = Math.Max(replicationCount, values.Count);
+            }
 
-                // Fetch the instances being bound to this list
-                IEnumerable<object> parameterValues = GetParametersValues(item.ParameterModel, item.Parameter, out bool isFromContext);
-                if (parameterValues == null)
-                    throw new ArgumentNullException(nameof(parameterValues));
-
-                Func<object, string> selectKeyFrom = Models.GetKeySelector(item.ParameterModel);
-                list = parameterValues.Select(parameterValue => new LayoutItem
+            for (int i = 0; i < replicationCount; ++i)
+            {
+                ret.Add(new LayoutItem
                 {
                     Id = item.Id,
                     LayoutId = item.LayoutId,
                     SnippetId = item.SnippetId,
-                    ParameterModel = item.ParameterModel,
-                    ParameterType = Enums.Parameter.Single,
-                    //Parameter = isFromContext ? null : selectKeyFrom(parameterValue),
-                    Parameter = selectKeyFrom(parameterValue),
-                    ParameterValue = isFromContext ? parameterValue : null,
                     OnTappedMethodName = item.OnTappedMethodName,
-                }).ToList();
-            }
-            catch (IgnoredException)
-            {
-                list = new List<LayoutItem>();
-            }
-            catch (Exception ex)
-            {
-                Debug.WriteLine(ex.ToString());
-                list = new List<LayoutItem>();
+                    Type = Enums.ReplicationType.Single,
+                    Parameters = item.Parameters.Select(p => new LayoutItemParameter
+                    {
+                        Id = p.Id,
+                        LayoutItemId = p.LayoutItemId,
+                        Type = p.Type,
+                        Model = p.Model,
+                        FlowIndex = p.FlowIndex,
+                        Value = p.Value,
+                        Reference = parametersValues[p.Id][i]   // TODO: Need to check replicationCount doesn't overflow
+                    }).ToArray()
+                });
             }
 
-            return list;
+            return ret;
         }
 
-        private object GetParameterValue(string model, string parameter, out bool isFromContext)
+        private object GetSingleValue(LayoutItemParameter parameter)
         {
-            object value = null;
+            object value;
 
-            // Try to find the property in the binding context first
-            PropertyInfo property = null;
-            if (View.BindingContext != null)
+            switch (parameter.Type)
             {
-                Type bindingContextType = View.BindingContext.GetType();
-                property = bindingContextType.GetProperty(parameter);
+                case Enums.SourceType.Context:
+                    {
+                        Type bindingContextType = View.BindingContext.GetType();
+                        PropertyInfo property = bindingContextType.GetProperty(parameter.Value);
+                        value = property.GetValue(View.BindingContext);
+                        break;
+                    }
+
+                case Enums.SourceType.Service:
+                    {
+                        value = Models.SelectSingle(parameter.Model, Guid.Parse(parameter.Value));
+                        break;
+                    }
+
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(parameter.Type));
             }
 
-            // If the binding context isn't null and the property exists, fetch the value of the property
-            if (property != null)
+            return value;
+        }
+
+        private IEnumerable<object> GetManyValues(LayoutItemParameter parameter)
+        {
+            IEnumerable<object> values;
+
+            switch (parameter.Type)
             {
-                value = property.GetValue(View.BindingContext);
-                isFromContext = true;
-                return value;
+                case Enums.SourceType.Context:
+                    {
+                        Type bindingContextType = View.BindingContext.GetType();
+                        PropertyInfo property = bindingContextType.GetProperty(parameter.Value);
+                        values = property.GetValue(View.BindingContext) as IEnumerable<object>;
+                        break;
+                    }
+
+                case Enums.SourceType.Service:
+                    {
+                        values = Models.SelectMany(parameter.Model, parameter.Value);
+                        break;
+                    }
+
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(parameter.Type));
             }
-            else if (Guid.TryParse(parameter, out Guid id))
-            {
-                // If the binding context is null or the property doesn't exist, and the parameter is an id, fetch the value from the IModelSelector
-                value = Models.SelectSingle(model, id);
-            }
+
+            return values;
+        }
+
+        //private HtmlWebViewSource GetSingleSnippet(LayoutItem item)
+        //{
+        //    // Fetch the snippet from whatever datastore it is stored in.
+        //    ISnippet snippet = Snippets.Select(item.SnippetId);
+        //    if (snippet == null)
+        //        throw new ArgumentNullException(nameof(snippet), $"Snippet {item.SnippetId:D}");
+
+        //    string html = snippet.Html;
+
+        //    try
+        //    {
+        //        if (item.Parameters == null || item.Parameters.Length < 1)
+        //            throw new IgnoredException();
+
+        //        foreach (LayoutItemParameter parameter in item.Parameters)
+        //        {
+        //            try
+        //            {
+        //                if (parameter == null)
+        //                    continue;
+
+        //                if (string.IsNullOrWhiteSpace(parameter.Model))
+        //                    throw new IgnoredException();
+
+        //                // Fetch the class being bound to this element
+        //                Assembly parameterModelAssembly = Assemblies.Select(parameter.Model);
+        //                Type parameterType = Type.GetType($"{parameter.Model}, {parameterModelAssembly.ToString()}", true);
+        //                if (parameterType == null)
+        //                    throw new ArgumentNullException(nameof(parameterType), $"Type {parameter.Model}");
+
+        //                // Fetch the instance being bound to this element
+        //                // If this LayoutItem has already been through the GetManySnippets then the parameterValue is already stored in item.ParameterValue 
+        //                object parameterValue = parameter.Reference == null
+        //                    ? GetParameterValue(parameter.Model, parameter.Value, out bool isFromContext)
+        //                    : parameter.Reference;
+        //                if (parameterValue == null)
+        //                    throw new ArgumentNullException(nameof(parameterValue));
+
+        //                // Insert each parameter into the html
+        //                foreach (PropertyInfo property in parameterType.GetProperties())
+        //                    html = html.Replace($"{{{property.Name}}}", property.GetValue(parameterValue)?.ToString());
+        //            }
+        //            catch (IgnoredException)
+        //            {
+        //                if (!string.IsNullOrWhiteSpace(parameter.Value))
+        //                    html = html.Replace("{.}", parameter.Value);
+        //            }
+        //            catch (Exception ex)
+        //            {
+        //                Debug.WriteLine(ex.ToString());
+        //                if (!string.IsNullOrWhiteSpace(parameter.Value))
+        //                    html = html.Replace("{.}", parameter.Value);
+        //            }
+        //        }                
+        //    }
+        //    catch (IgnoredException)
+        //    {
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        Debug.WriteLine(ex.ToString());
+        //    }
+
+        //    if (string.IsNullOrWhiteSpace(html))
+        //        return null;
+
+        //    return new HtmlWebViewSource { Html = html };
+        //}
+
+        //private IEnumerable<ILayoutItem> GetManySnippets(ILayoutItem item)
+        //{
+        //    IList<LayoutItem> list = null;
+
+        //    try
+        //    {
+        //        if (string.IsNullOrWhiteSpace(item.ParameterModel))
+        //            throw new IgnoredException();
+
+        //        // Fetch the instances being bound to this list
+        //        IEnumerable<object> parameterValues = GetParametersValues(item.ParameterModel, item.Parameter, out bool isFromContext);
+        //        if (parameterValues == null)
+        //            throw new ArgumentNullException(nameof(parameterValues));
+
+        //        Func<object, string> selectKeyFrom = Models.GetKeySelector(item.ParameterModel);
+        //        list = parameterValues.Select(parameterValue => new LayoutItem
+        //        {
+        //            Id = item.Id,
+        //            LayoutId = item.LayoutId,
+        //            SnippetId = item.SnippetId,
+        //            ParameterModel = item.ParameterModel,
+        //            ParameterType = Enums.Parameter.Single,
+        //            //Parameter = isFromContext ? null : selectKeyFrom(parameterValue),
+        //            Parameter = selectKeyFrom(parameterValue),
+        //            ParameterValue = isFromContext ? parameterValue : null,
+        //            OnTappedMethodName = item.OnTappedMethodName,
+        //        }).ToList();
+        //    }
+        //    catch (IgnoredException)
+        //    {
+        //        list = new List<LayoutItem>();
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        Debug.WriteLine(ex.ToString());
+        //        list = new List<LayoutItem>();
+        //    }
+
+        //    return list;
+        //}
+
+        //private object GetParameterValue(string model, string parameter, out bool isFromContext)
+        //{
+        //    object value = null;
+
+        //    // Try to find the property in the binding context first
+        //    PropertyInfo property = null;
+        //    if (View.BindingContext != null)
+        //    {
+        //        Type bindingContextType = View.BindingContext.GetType();
+        //        property = bindingContextType.GetProperty(parameter);
+        //    }
+
+        //    // If the binding context isn't null and the property exists, fetch the value of the property
+        //    if (property != null)
+        //    {
+        //        value = property.GetValue(View.BindingContext);
+        //        isFromContext = true;
+        //        return value;
+        //    }
+        //    else if (Guid.TryParse(parameter, out Guid id))
+        //    {
+        //        // If the binding context is null or the property doesn't exist, and the parameter is an id, fetch the value from the IModelSelector
+        //        value = Models.SelectSingle(model, id);
+        //    }
                 
-            isFromContext = false;
-            return value;
-        }
+        //    isFromContext = false;
+        //    return value;
+        //}
 
-        private IEnumerable<object> GetParametersValues(string model, string filter, out bool isFromContext)
-        {
-            IEnumerable<object> value = null;
+        //private IEnumerable<object> GetParametersValues(string model, string filter, out bool isFromContext)
+        //{
+        //    IEnumerable<object> value = null;
 
-            // Try to find the property in the binding context first
-            PropertyInfo property = null;
-            if (View.BindingContext != null)
-            {
-                Type bindingContextType = View.BindingContext.GetType();
-                property = bindingContextType.GetProperty(filter);
-            }
+        //    // Try to find the property in the binding context first
+        //    PropertyInfo property = null;
+        //    if (View.BindingContext != null)
+        //    {
+        //        Type bindingContextType = View.BindingContext.GetType();
+        //        property = bindingContextType.GetProperty(filter);
+        //    }
 
-            // If the binding context isn't null and the property exists, fetch the value of the property
-            if (property != null)
-            {
-                value = property.GetValue(View.BindingContext) as IEnumerable<object>;
-                isFromContext = true;
-                return value;
-            }
-            else if (!string.IsNullOrWhiteSpace(filter))
-            {
-                // If the binding context is null or the property doesn't exist, and the filter is set, fetch the value from the IModelSelector
-                value = Models.SelectMany(model, filter);
-            }
+        //    // If the binding context isn't null and the property exists, fetch the value of the property
+        //    if (property != null)
+        //    {
+        //        value = property.GetValue(View.BindingContext) as IEnumerable<object>;
+        //        isFromContext = true;
+        //        return value;
+        //    }
+        //    else if (!string.IsNullOrWhiteSpace(filter))
+        //    {
+        //        // If the binding context is null or the property doesn't exist, and the filter is set, fetch the value from the IModelSelector
+        //        value = Models.SelectMany(model, filter);
+        //    }
             
-            isFromContext = false;
-            return value;
-        }
+        //    isFromContext = false;
+        //    return value;
+        //}
 
         //private IEnumerable<object> Get(IEnumerable<object> models, Type modelType, string filterString)
         //{

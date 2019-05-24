@@ -15,6 +15,10 @@ namespace Demo.Interfaces
 
         IEnumerable<LayoutItem> GetLayoutItems(Func<LayoutItem, bool> expession);
 
+        LayoutItemParameter GetLayoutItemParameter(Guid id);
+
+        IEnumerable<LayoutItemParameter> GetLayoutItemParameters(Func<LayoutItemParameter, bool> expession);
+
         Snippet GetSnippet(Guid id);
 
         IEnumerable<Snippet> GetSnippets(Func<Snippet, bool> expession);

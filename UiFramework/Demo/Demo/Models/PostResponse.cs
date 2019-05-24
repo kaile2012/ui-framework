@@ -14,5 +14,7 @@ namespace Demo.Models
         public string Content { get; set; }
 
         public bool IsLike { get; set; }
+
+        public DateTime PostedAt { get; set; }
     }
 }

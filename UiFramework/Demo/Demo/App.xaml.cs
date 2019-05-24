@@ -41,6 +41,7 @@ namespace Demo
 
             SnippetPage page = new SnippetPage();
             page.BindingContext = new MainPageViewModel(page.Navigation, DataStore);
+            page.Title = "Demo";
 
             MainPage = new NavigationPage(page);
         }

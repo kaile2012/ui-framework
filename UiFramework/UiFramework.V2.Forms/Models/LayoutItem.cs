@@ -8,7 +8,7 @@ namespace UiFramework.V2.Forms.Models
     /// <summary>
     /// These models are only here for convenience.
     /// <para />
-    /// This model is observable for use in apps. Use UiFramework.V2.Models.LayoutItem if you don't require INotifyPropertyChanged.
+    /// This model is observable for use in apps.
     /// <para />
     /// Each element of the grid that loads parameters into a snippet
     /// <para />
@@ -19,10 +19,8 @@ namespace UiFramework.V2.Forms.Models
         protected Guid _id;
         protected Guid _layoutId;
         protected Guid _snippetId;
-        protected string _parameterModel;
-        protected Parameter _parameterType;
-        protected string _parameter;
-        protected object _parameterValue;
+        protected ReplicationType _type;
+        protected ILayoutItemParameter[] _parameters;
         protected string _onTappedMethodName;
         protected int _column;
         protected int _row;
@@ -63,51 +61,31 @@ namespace UiFramework.V2.Forms.Models
 		}
 
         /// <summary>
-        /// The name of the model being bound to this element. Leave this null if you are inserting the actual string in <see cref="Parameter" />.
+        /// The sort of item that is being bound to a snippet.
         /// <para />
-        /// Binding the User object from the demo app: <code>UiFramework.V2.DemoApp.Models.User</code>
+        /// <seealso cref="ReplicationType"/>
         /// <para />
-        /// <seealso cref="ILayoutItem.ParameterModel"/>
+        /// <seealso cref="ILayoutItem.Type"/>
         /// </summary>
-        public string ParameterModel
-		{
-			get => _parameterModel;
-			set => SetProperty(ref _parameterModel, value);
-		}
-
-        /// <summary>
-        /// The sort of item that is being bound to a snippet. (<see cref="Enums.Parameter"/> may not be fully implemented.)
-        /// <para />
-        /// <seealso cref="Enums.Parameter"/>
-        /// <para />
-        /// <seealso cref="ILayoutItem.ParameterType"/>
-        /// </summary>
-        public Parameter ParameterType
-		{
-			get => _parameterType;
-			set => SetProperty(ref _parameterType, value);
-		}
-
-        /// <summary>
-        /// The parameter being bound to the element. If a model is being bound, this is the primary key identifier.
-        /// <para />
-        /// <seealso cref="ILayoutItem.Parameter"/>
-        /// </summary>
-        public string Parameter
-		{
-			get => _parameter;
-			set => SetProperty(ref _parameter, value);
-		}
-
-        /// <summary>
-        /// This is the actual object being bound to the element. This is not stored in anyway, it is used internally in <see cref="Converters.HtmlSourceConverter"/>
-        /// </summary>
-        public object ParameterValue
+        public ReplicationType Type
         {
-            get => _parameterValue;
-            set => SetProperty(ref _parameterValue, value);
+            get => _type;
+            set => SetProperty(ref _type, value);
         }
 
+        /// <summary>
+        /// The parameters that are bound to this element.
+        /// <para />
+        /// <seealso cref="ILayoutItemParameter"/>
+        /// <para />
+        /// <seealso cref="ILayoutItem.Parameters"/>
+        /// </summary>
+        public ILayoutItemParameter[] Parameters
+        {
+            get => _parameters;
+            set => SetProperty(ref _parameters, value);
+        }
+        
         /// <summary>
         /// The name of the method to call when tapping on this item.
         /// <para />

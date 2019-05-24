@@ -1,9 +1,8 @@
 ﻿using System;
-using UiFramework.V2.Interfaces;
 
 namespace Demo.Models
 {
-    public class LayoutItem : UiFramework.V2.Forms.Models.LayoutItem
+    public class LayoutItemParameter : UiFramework.V2.Forms.Models.LayoutItemParameter
     {
         [SQLite.PrimaryKey]
         public new Guid Id
@@ -13,10 +12,10 @@ namespace Demo.Models
         }
 
         [SQLite.Ignore]
-        public new ILayoutItemParameter[] Parameters
+        public new object Reference
         {
-            get => _parameters;
-            set => SetProperty(ref _parameters, value);
+            get => _reference;
+            set => SetProperty(ref _reference, value);
         }
     }
 }

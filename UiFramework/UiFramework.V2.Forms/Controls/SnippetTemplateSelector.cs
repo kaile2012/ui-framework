@@ -14,16 +14,16 @@ namespace UiFramework.V2.Forms.Controls
         protected override DataTemplate OnSelectTemplate(object item, BindableObject container)
         {
             ILayoutItem layoutItem = (ILayoutItem) item;
-            switch (layoutItem.ParameterType)
+            switch (layoutItem.Type)
             {
-                case Enums.Parameter.Single:
+                case Enums.ReplicationType.Single:
                     return Single;
 
-                case Enums.Parameter.Many:
+                case Enums.ReplicationType.Many:
                     return Many;
 
                 default:
-                    throw new ArgumentOutOfRangeException(nameof(layoutItem.ParameterType));
+                    throw new ArgumentOutOfRangeException(nameof(layoutItem.Type));
             }
         }
     }

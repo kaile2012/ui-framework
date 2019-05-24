@@ -19,23 +19,18 @@ namespace UiFramework.V2.Interfaces
         Guid SnippetId { get; set; }
 
         /// <summary>
-        /// The name of the model being bound to this element. Leave this null if you are inserting the actual string in <see cref="Parameter" />.
-        /// <para />
-        /// Binding the User object from the demo app: <code>UiFramework.V2.DemoApp.Models.User</code>
-        /// </summary>
-        string ParameterModel { get; set; }
-
-        /// <summary>
         /// The sort of item that is being bound to a snippet.
         /// <para />
-        /// <seealso cref="Enums.Parameter"/>
+        /// <seealso cref="ReplicationType"/>
         /// </summary>
-        Parameter ParameterType { get; set; }
+        ReplicationType Type { get; set; }
 
         /// <summary>
-        /// The parameter being bound to the element. If a model is being bound, this is the primary key identifier.
+        /// The parameters that are bound to this element.
+        /// <para />
+        /// <seealso cref="ILayoutItemParameter"/>
         /// </summary>
-        string Parameter { get; set; }
+        ILayoutItemParameter[] Parameters { get; set; }
 
         /// <summary>
         /// The name of the method to call when tapping on this item.

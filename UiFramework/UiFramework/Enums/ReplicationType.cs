@@ -1,13 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace UiFramework.V2.Enums
+﻿namespace UiFramework.V2.Enums
 {
     /// <summary>
     /// An enum to represent what sort of item is being bound to a snippet.
     /// </summary>
-    public enum Parameter
+    public enum ReplicationType
     {
         /// <summary>
         /// A single item.

@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Linq;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using UiFramework.V2.Forms.Pages;
+using UiFramework.V2.Interfaces;
 using Xamarin.Forms;
 using Demo.Models;
 using Demo.Interfaces;
@@ -40,7 +40,13 @@ namespace Demo.ViewModels
             Methods.Add(nameof(OpenImage), OpenImage);
 
             Layout layout = _dataStore.GetLayout(_id);
-            layout.Items = _dataStore.GetLayoutItems(li => li.LayoutId == _id).ToArray();
+            layout.Items = _dataStore
+                .GetLayoutItems(li => li.LayoutId == _id)
+                .Select(li =>
+                {
+                    li.Parameters = _dataStore.GetLayoutItemParameters(lip => lip.LayoutItemId == li.Id).ToArray();
+                    return li;
+                }).ToArray();
 
             SelectedUser = user;
             UserPosts = dataStore.GetPosts(p => p.PosterId == SelectedUser.Id).ToList();
@@ -49,7 +55,8 @@ namespace Demo.ViewModels
 
         public void Navigate(LayoutItemTappedArgs args)
         {
-            if (!Guid.TryParse(args.SnippetLayoutItem.Parameter, out Guid postId))
+            ILayoutItemParameter parameter = args.SnippetLayoutItem.Parameters.FirstOrDefault(p => p.Model == "Demo.Models.Post");
+            if (!Guid.TryParse(parameter.Value, out Guid postId))
                 return;
 
             Post post = _dataStore.GetPost(postId);
@@ -57,6 +64,7 @@ namespace Demo.ViewModels
                 return;
 
             SnippetPage page = new SnippetPage();
+            page.Title = post.Content;
             page.BindingContext = new PostPageViewModel(_dataStore, post);
 
             _navigation.PushAsync(page);

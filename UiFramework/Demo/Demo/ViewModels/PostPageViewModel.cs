@@ -29,15 +29,30 @@ namespace Demo.ViewModels
             set => SetProperty(ref _responses, value);
         }
 
+        private IList<User> _responseUsers;
+        public IList<User> ResponseUsers
+        {
+            get => _responseUsers;
+            set => SetProperty(ref _responseUsers, value);
+        }
+
         public PostPageViewModel(IDataStore dataStore, Post post)
         {
             _dataStore = dataStore;
 
             Layout layout = _dataStore.GetLayout(_id);
-            layout.Items = _dataStore.GetLayoutItems(li => li.LayoutId == _id).ToArray();
+            layout.Items = _dataStore
+                .GetLayoutItems(li => li.LayoutId == _id)
+                .Select(li =>
+                {
+                    li.Parameters = _dataStore.GetLayoutItemParameters(lip => lip.LayoutItemId == li.Id).ToArray();
+                    return li;
+                }).ToArray();
 
+            IEnumerable<User> users = dataStore.GetUsers(u => true);
             SelectedPost = post;
-            Responses = dataStore.GetPostResponses(pr => pr.PostId == SelectedPost.Id).ToList();
+            Responses = dataStore.GetPostResponses(pr => pr.PostId == SelectedPost.Id && !pr.IsLike).ToList();
+            ResponseUsers = Responses.Select(r => users.FirstOrDefault(u => u.Id == r.CommenterId)).ToList();
             SnippetLayout = layout;
         }
     }

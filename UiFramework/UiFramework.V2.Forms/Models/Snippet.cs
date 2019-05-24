@@ -7,7 +7,7 @@ namespace UiFramework.V2.Forms.Models
     /// <summary>
     /// These models are only here for convenience.
     /// <para />
-    /// This model is observable for use in apps. Use UiFramework.V2.Models.Snippet if you don't require INotifyPropertyChanged.
+    /// This model is observable for use in apps.
     /// <para />
     /// A snippet of reusable html that is used in each element of the grid.
     /// <para />

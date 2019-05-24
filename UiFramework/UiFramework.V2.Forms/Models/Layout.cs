@@ -7,7 +7,7 @@ namespace UiFramework.V2.Forms.Models
     /// <summary>
     /// A layout represents each page of the application.
     /// <para />
-    /// This model is observable for use in apps. Use UiFramework.V2.Models.Layout if you don't require INotifyPropertyChanged.
+    /// This model is observable for use in apps.
     /// <para />
     /// <seealso cref="ILayout"/>
     /// </summary>

@@ -33,106 +33,6 @@ namespace Demo.iOS.Services
             File.Copy(resource, file, true);
 
             _local = new SQLiteConnection(file);
-
-            //_local.CreateTables<Snippet, Layout, LayoutItem>();
-            //_local.CreateTables<User, Post, PostResponse>();
-
-            //Random rng = new Random();
-            //IList<User> users = GetUsers(u => true).ToList();
-            //
-            //IList<Post> posts = new List<Post>();
-            //foreach (User user in users)
-            //{
-            //    double d = rng.NextDouble();
-            //    if (d < 0.2)
-            //        continue;
-            //
-            //    int count = rng.Next(1, 10);
-            //    for (int i = 0; i < count; ++i)
-            //        posts.Add(new Post
-            //        {
-            //            Id = Guid.NewGuid(),
-            //            PosterId = user.Id,
-            //            Content = LoremIpsum(rng, 5, 30, 1, 5, 1)
-            //        });
-            //}
-            //
-            //_local.InsertAll(posts);
-            //
-            //IList<PostResponse> responses = new List<PostResponse>();
-            //foreach (Post post in GetPosts(p => true))
-            //{
-            //    double d = rng.NextDouble();
-            //    if (d < 0.1)
-            //        continue;
-            //
-            //    int likeCount = rng.Next(1, 20);
-            //    for (int i = 0; i < likeCount; ++i)
-            //        responses.Add(new PostResponse
-            //        {
-            //            Id = Guid.NewGuid(),
-            //            PostId = post.Id,
-            //            CommenterId = GetRandomUserId(rng, users, post.PosterId),
-            //            Content = null,
-            //            IsLike = true
-            //        });
-            //
-            //    if (d < 0.6)
-            //    {
-            //        int commentCount = rng.Next(1, 5);
-            //        for (int i = 0; i < commentCount; ++i)
-            //            responses.Add(new PostResponse
-            //            {
-            //                Id = Guid.NewGuid(),
-            //                PostId = post.Id,
-            //                CommenterId = GetRandomUserId(rng, users, post.PosterId),
-            //                Content = LoremIpsum(rng, 5, 30, 1, 5, 1),
-            //                IsLike = false
-            //            });
-            //    }
-            //}
-            //
-            //_local.InsertAll(responses);
-        }
-
-        /// <summary>
-        /// Method found at: https://stackoverflow.com/questions/4286487/is-there-any-lorem-ipsum-generator-in-c#answer-4286571
-        /// By users: Greg and Chris Ballance
-        /// </summary>
-        private string LoremIpsum(Random rng, int minWords, int maxWords, int minSentences, int maxSentences, int numParagraphs)
-        {
-            string[] words = new[] { "lorem", "ipsum", "dolor", "sit", "amet", "consectetuer", "adipiscing", "elit", "sed",
-                "diam", "nonummy", "nibh", "euismod", "tincidunt", "ut", "laoreet", "dolore", "magna", "aliquam", "erat" };
-
-            int numSentences = rng.Next(maxSentences - minSentences) + minSentences + 1;
-            int numWords = rng.Next(maxWords - minWords) + minWords + 1;
-
-            StringBuilder result = new StringBuilder();
-
-            for (int p = 0; p < numParagraphs; p++)
-            {
-                for (int s = 0; s < numSentences; s++)
-                {
-                    for (int w = 0; w < numWords; w++)
-                    {
-                        if (w > 0) { result.Append(" "); }
-                        result.Append(words[rng.Next(words.Length)]);
-                    }
-                    result.Append(". ");
-                }
-                result.Append(Environment.NewLine);
-            }
-
-            return result.ToString();
-        }
-
-        private Guid GetRandomUserId(Random rng, IList<User> users, params Guid[] exceptions)
-        {
-            int i = rng.Next(0, users.Count);
-            User user = users[i];
-            return !exceptions.Contains(user.Id)
-                ? user.Id
-                : GetRandomUserId(rng, users, exceptions);
         }
 
         //
@@ -157,6 +57,16 @@ namespace Demo.iOS.Services
         public IEnumerable<LayoutItem> GetLayoutItems(Func<LayoutItem, bool> expession)
         {
             return this.GetItems<LayoutItem>().Where(expession);
+        }
+
+        public LayoutItemParameter GetLayoutItemParameter(Guid id)
+        {
+            return this.GetItems<LayoutItemParameter>().FirstOrDefault(lip => lip.Id == id);
+        }
+
+        public IEnumerable<LayoutItemParameter> GetLayoutItemParameters(Func<LayoutItemParameter, bool> expession)
+        {
+            return this.GetItems<LayoutItemParameter>().Where(expession);
         }
 
         public Snippet GetSnippet(Guid id)

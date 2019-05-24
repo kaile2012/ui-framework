@@ -2,6 +2,7 @@
 using System.Linq;
 using UiFramework.V2.Forms.Models;
 using UiFramework.V2.Forms.Pages;
+using UiFramework.V2.Interfaces;
 using Xamarin.Forms;
 using Demo.Models;
 using Demo.Interfaces;
@@ -23,14 +24,21 @@ namespace Demo.ViewModels
             Methods.Add(nameof(Navigate), Navigate);
 
             Layout layout = _dataStore.GetLayout(_id);
-            layout.Items = _dataStore.GetLayoutItems(li => li.LayoutId == _id).ToArray();
-
+            layout.Items = _dataStore
+                .GetLayoutItems(li => li.LayoutId == _id)
+                .Select(li =>
+                {
+                    li.Parameters = _dataStore.GetLayoutItemParameters(lip => lip.LayoutItemId == li.Id).ToArray();
+                    return li;
+                }).ToArray();
+            
             SnippetLayout = layout;
         }
 
         public void Navigate(LayoutItemTappedArgs args)
         {
-            if (!Guid.TryParse(args.SnippetLayoutItem.Parameter, out Guid userId))
+            ILayoutItemParameter parameter = args.SnippetLayoutItem.Parameters.FirstOrDefault(p => p.Model == "Demo.Models.User");
+            if (!Guid.TryParse(parameter.Value, out Guid userId))
                 return;
 
             User user = _dataStore.GetUser(userId);
@@ -38,6 +46,7 @@ namespace Demo.ViewModels
                 return;
 
             SnippetPage page = new SnippetPage();
+            page.Title = $"{user.Name}'s Posts";
             page.BindingContext = new UserPageViewModel(page.Navigation, _dataStore, user);
 
             _navigation.PushAsync(page);
