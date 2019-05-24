@@ -13,12 +13,12 @@ namespace UiFramework.V2.Forms.Models
     /// </summary>
     public class Layout : ObservableObject, ILayout
     {
-        private Guid _id;
-        private string _name;
-        private string _description;
-        private ILayoutItem[] _items;
-        private int _columnCount;
-        private int _rowCount;
+        protected Guid _id;
+        protected string _name;
+        protected string _description;
+        protected ILayoutItem[] _items;
+        protected int _columnCount;
+        protected int _rowCount;
         
         /// <summary>
         /// The primary key.

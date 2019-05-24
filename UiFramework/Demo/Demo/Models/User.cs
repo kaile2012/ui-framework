@@ -4,6 +4,7 @@ namespace Demo.Models
 {
     public class User
     {
+        [SQLite.PrimaryKey]
         public Guid Id { get; set; }
 
         public string UserName { get; set; }

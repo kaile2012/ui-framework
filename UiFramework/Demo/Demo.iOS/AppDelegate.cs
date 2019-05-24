@@ -2,6 +2,8 @@
 using System.Diagnostics;
 using Foundation;
 using UIKit;
+using Demo.Interfaces;
+using Demo.iOS.Services;
 
 namespace Demo.iOS
 {
@@ -11,6 +13,9 @@ namespace Demo.iOS
     [Register("AppDelegate")]
     public partial class AppDelegate : global::Xamarin.Forms.Platform.iOS.FormsApplicationDelegate
     {
+        private App _app = null;
+        private IDataStore _dataStore = null;
+
         //
         // This method is invoked when the application has loaded and is ready to run. In this 
         // method you should instantiate the window, load the UI into it and then make the window
@@ -20,10 +25,14 @@ namespace Demo.iOS
         //
         public override bool FinishedLaunching(UIApplication app, NSDictionary options)
         {
+            global::Xamarin.Forms.Forms.Init();
+
             UiFramework.V2.iOS.Renderers.SnippetWebViewRenderer.Initialise();
 
-            global::Xamarin.Forms.Forms.Init();
-            LoadApplication(new App());
+            _dataStore = new DataStore();
+
+            _app = new App(_dataStore);
+            LoadApplication(_app);
 
             return base.FinishedLaunching(app, options);
         }

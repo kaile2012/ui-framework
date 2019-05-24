@@ -9,7 +9,7 @@ namespace UiFramework.V2.Forms.Controls
     {
         public static readonly BindableProperty SnippetLayoutProperty = BindableProperty.Create(
             nameof(SnippetLayout),
-            typeof(Interfaces.ILayout),
+            typeof(V2.Interfaces.ILayout),
             typeof(SnippetView),
             defaultValue: null,
             defaultBindingMode: BindingMode.OneWay
@@ -23,9 +23,9 @@ namespace UiFramework.V2.Forms.Controls
             defaultBindingMode: BindingMode.OneWay
         );
 
-        public Interfaces.ILayout SnippetLayout
+        public V2.Interfaces.ILayout SnippetLayout
         {
-            get => (Interfaces.ILayout) GetValue(SnippetLayoutProperty);
+            get => (V2.Interfaces.ILayout) GetValue(SnippetLayoutProperty);
             set => SetValue(SnippetLayoutProperty, value);
         }
 

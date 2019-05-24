@@ -1,55 +1,63 @@
-﻿<?xml version="1.0" encoding="UTF-8"?>
-    <ScrollView xmlns="http://xamarin.com/schemas/2014/forms" 
-                xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-                xmlns:models="clr-namespace:UiFramework.V2.Forms.Models"
-                xmlns:controls="clr-namespace:UiFramework.V2.Forms.Controls"
-                xmlns:converters="clr-namespace:UiFramework.V2.Forms.Converters"
-                x:Class="UiFramework.V2.Forms.Controls.SnippetView"
-                HorizontalOptions="Fill"
-                VerticalOptions="Fill"
-                x:Name="Root">
+﻿<ScrollView xmlns="http://xamarin.com/schemas/2014/forms" 
+            xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+            xmlns:models="clr-namespace:UiFramework.V2.Forms.Models"
+            xmlns:controls="clr-namespace:UiFramework.V2.Forms.Controls"
+            xmlns:converters="clr-namespace:UiFramework.V2.Forms.Converters"
+            x:Class="UiFramework.V2.Forms.Controls.SnippetView"
+            HorizontalOptions="Fill"
+            VerticalOptions="Fill"
+            x:Name="Root">
 
-        <ScrollView.Resources>
-            <converters:HtmlSourceConverter x:Key="HtmlSourceConverter" />
-            <converters:ContainerConverter x:Key="ContainerConverter"
-                                           ContainerModel="UiFramework.V2.Forms.Models.LayoutItemTappedArgs, UiFramework.V2.Forms, Version=1.0.0.0, Culture=null, PublicKeyToken=null"
-                                           ContainerProperty="SnippetLayoutItem" />
+    <ScrollView.Resources>
+        <!--
+             The HtmlSourceConverter requires the implementations of the three interfaces to be added as a resource to the main App class
+             The Demo app adds them in the App.xaml.cs as the implementations require a parameterised constructor.
+        -->
+        <converters:HtmlSourceConverter x:Key="HtmlSourceConverter" 
+                                        Snippets="{StaticResource SnippetSelector}"
+                                        Assemblies="{StaticResource AssemblySelector}"
+                                        Models="{StaticResource ModelSelector}"
+                                        View="{x:Reference Root}" />
+            
+        <converters:ContainerConverter x:Key="ContainerConverter"
+                                       ContainerModel="UiFramework.V2.Forms.Models.LayoutItemTappedArgs, UiFramework.V2.Forms, Version=1.0.0.0, Culture=null, PublicKeyToken=null"
+                                       ContainerProperty="SnippetLayoutItem" />
 
-            <DataTemplate x:Key="SingleSnippet">
-                <ViewCell>
-                    <controls:SnippetWebView Margin="0"
-                                             HorizontalOptions="Fill"
-                                             VerticalOptions="Fill"
-                                             Source="{Binding ., Converter={StaticResource HtmlSourceConverter}}">
+        <DataTemplate x:Key="SingleSnippet">
+            <ViewCell>
+                <controls:SnippetWebView Margin="0"
+                                         HorizontalOptions="Fill"
+                                         VerticalOptions="Fill"
+                                         Source="{Binding ., Converter={StaticResource HtmlSourceConverter}}">
 
-                        <controls:SnippetWebView.GestureRecognizers>
-                            <TapGestureRecognizer Command="{Binding ItemTappedCommand, Source={x:Reference Root}}"
-                                                  CommandParameter="{Binding ., Converter={StaticResource ContainerConverter}}" />
-                        </controls:SnippetWebView.GestureRecognizers>
-                    </controls:SnippetWebView>
-                </ViewCell>
-            </DataTemplate>
+                    <controls:SnippetWebView.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding ItemTappedCommand, Source={x:Reference Root}}"
+                                              CommandParameter="{Binding ., Converter={StaticResource ContainerConverter}}" />
+                    </controls:SnippetWebView.GestureRecognizers>
+                </controls:SnippetWebView>
+            </ViewCell>
+        </DataTemplate>
 
-            <DataTemplate x:Key="ManySnippets">
-                <ViewCell>
-                    <controls:StackedListView Margin="0"
-                                              HorizontalOptions="FillAndExpand"
-                                              VerticalOptions="FillAndExpand"
-                                              Items="{Binding ., Converter={StaticResource HtmlSourceConverter}}"
-                                              ItemTemplate="{StaticResource SingleSnippet}" />
-                </ViewCell>
-            </DataTemplate>
+        <DataTemplate x:Key="ManySnippets">
+            <ViewCell>
+                <controls:StackedListView Margin="0"
+                                          HorizontalOptions="FillAndExpand"
+                                          VerticalOptions="FillAndExpand"
+                                          Items="{Binding ., Converter={StaticResource HtmlSourceConverter}}"
+                                          ItemTemplate="{StaticResource SingleSnippet}" />
+            </ViewCell>
+        </DataTemplate>
 
-            <controls:SnippetTemplateSelector x:Key="SnippetTemplateSelector"
-                                              Single="{StaticResource SingleSnippet}"
-                                              Many="{StaticResource ManySnippets}" />
-        </ScrollView.Resources>
+        <controls:SnippetTemplateSelector x:Key="SnippetTemplateSelector"
+                                          Single="{StaticResource SingleSnippet}"
+                                          Many="{StaticResource ManySnippets}" />
+    </ScrollView.Resources>
 
-        <controls:DynamicGridView HorizontalOptions="Fill"
-                                  ColumnsLength="*"
-                                  RowsLength="Auto"
-                                  Columns="{Binding SnippetLayout.ColumnCount}"
-                                  Rows="{Binding SnippetLayout.RowCount}"
-                                  Items="{Binding SnippetLayout.Items}"
-                                  ItemTemplate="{StaticResource SnippetTemplateSelector}" />
-    </ScrollView>
+    <controls:DynamicGridView HorizontalOptions="Fill"
+                              ColumnsLength="*"
+                              RowsLength="Auto"
+                              Columns="{Binding SnippetLayout.ColumnCount}"
+                              Rows="{Binding SnippetLayout.RowCount}"
+                              Items="{Binding SnippetLayout.Items}"
+                              ItemTemplate="{StaticResource SnippetTemplateSelector}" />
+</ScrollView>

@@ -15,10 +15,10 @@ namespace UiFramework.V2.Forms.Models
     /// </summary>
     public class Snippet : ObservableObject, ISnippet
     {
-        private Guid _id;
-        private string _name;
-        private string _description;
-        private string _html;
+        protected Guid _id;
+        protected string _name;
+        protected string _description;
+        protected string _html;
 
         /// <summary>
         /// The primary key.

@@ -16,17 +16,18 @@ namespace UiFramework.V2.Forms.Models
     /// </summary>
     public class LayoutItem : ObservableObject, ILayoutItem
     {
-        private Guid _id;
-        private Guid _layoutId;
-        private Guid _snippetId;
-        private string _parameterModel;
-        private Parameter _parameterType;
-        private string _parameter;
-        private string _onTappedMethodName;
-        private int _column;
-        private int _row;
-        private int _columnSpan;
-        private int _rowSpan;
+        protected Guid _id;
+        protected Guid _layoutId;
+        protected Guid _snippetId;
+        protected string _parameterModel;
+        protected Parameter _parameterType;
+        protected string _parameter;
+        protected object _parameterValue;
+        protected string _onTappedMethodName;
+        protected int _column;
+        protected int _row;
+        protected int _columnSpan;
+        protected int _rowSpan;
 
         /// <summary>
         /// The primary key.
@@ -97,6 +98,15 @@ namespace UiFramework.V2.Forms.Models
 			get => _parameter;
 			set => SetProperty(ref _parameter, value);
 		}
+
+        /// <summary>
+        /// This is the actual object being bound to the element. This is not stored in anyway, it is used internally in <see cref="Converters.HtmlSourceConverter"/>
+        /// </summary>
+        public object ParameterValue
+        {
+            get => _parameterValue;
+            set => SetProperty(ref _parameterValue, value);
+        }
 
         /// <summary>
         /// The name of the method to call when tapping on this item.
